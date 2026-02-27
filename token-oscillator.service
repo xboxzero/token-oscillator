@@ -1,0 +1,15 @@
+[Unit]
+Description=Token Oscillator WebSocket Backend
+After=network.target nginx.service
+
+[Service]
+Type=simple
+User=xero
+Group=xero
+WorkingDirectory=/home/xero/token-oscillator/backend
+ExecStart=/usr/bin/python3 /home/xero/token-oscillator/backend/server.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
