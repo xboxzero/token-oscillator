@@ -10,170 +10,137 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 canvas{display:block}
 #audio-prompt{
   position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  background:rgba(0,0,0,0.8);color:rgba(255,200,120,0.9);
+  background:rgba(0,0,0,0.85);color:rgba(255,200,120,0.9);
   padding:24px 48px;border-radius:50px;font-size:16px;letter-spacing:3px;
   cursor:pointer;z-index:30;border:1px solid rgba(255,160,60,0.3);
   transition:opacity 1s ease;text-transform:uppercase;
 }
 #audio-prompt.hidden{opacity:0;pointer-events:none}
-/* ── Live Performance UI ── */
 #perf-panel{
   position:fixed;bottom:0;left:0;right:0;z-index:15;
-  background:rgba(0,0,0,0.75);border-top:1px solid rgba(255,160,60,0.15);
-  display:flex;flex-direction:column;gap:0;
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  background:rgba(0,0,0,0.8);border-top:1px solid rgba(255,160,60,0.15);
+  display:flex;flex-direction:column;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
-#transport{
-  display:flex;align-items:center;gap:12px;padding:6px 16px;
-  border-bottom:1px solid rgba(255,255,255,0.05);
-}
-#sections{display:flex;gap:0;padding:0}
-.section{
-  flex:1;display:flex;flex-direction:column;gap:6px;padding:8px 12px;
-  border-right:1px solid rgba(255,255,255,0.05);
-}
+#transport{display:flex;align-items:center;gap:10px;padding:5px 12px;border-bottom:1px solid rgba(255,255,255,0.05);flex-wrap:wrap}
+#sections{display:flex;gap:0;padding:0;flex-wrap:wrap}
+.section{flex:1;min-width:140px;display:flex;flex-direction:column;gap:4px;padding:6px 10px;border-right:1px solid rgba(255,255,255,0.05)}
 .section:last-child{border-right:none}
-.sec-title{
-  color:rgba(255,180,80,0.6);font-size:9px;letter-spacing:2px;
-  text-transform:uppercase;text-align:center;
-}
-.ctrl-row{display:flex;gap:6px;align-items:center;justify-content:center}
-.sl{
-  -webkit-appearance:none;appearance:none;width:80px;height:3px;border-radius:3px;
-  background:rgba(255,255,255,0.08);outline:none;cursor:pointer;
-}
-.sl::-webkit-slider-thumb{
-  -webkit-appearance:none;width:12px;height:12px;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,180,80,0.9),rgba(180,80,20,0.6));
-  border:1px solid rgba(255,200,120,0.3);cursor:pointer;
-}
-.lbl{color:rgba(200,170,130,0.6);font-size:9px;min-width:35px;text-align:right;letter-spacing:1px}
-.btn{
-  background:rgba(255,255,255,0.05);color:rgba(200,170,130,0.7);
-  border:1px solid rgba(255,160,60,0.15);border-radius:14px;
-  padding:4px 10px;font-size:10px;cursor:pointer;font-family:inherit;
-  transition:all 0.2s;letter-spacing:1px;
-}
+.sec-title{color:rgba(255,180,80,0.6);font-size:8px;letter-spacing:2px;text-transform:uppercase;text-align:center}
+.ctrl-row{display:flex;gap:5px;align-items:center;justify-content:center;flex-wrap:wrap}
+.sl{-webkit-appearance:none;appearance:none;width:70px;height:3px;border-radius:3px;background:rgba(255,255,255,0.08);outline:none;cursor:pointer}
+.sl::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:radial-gradient(circle,rgba(255,180,80,0.9),rgba(180,80,20,0.6));border:1px solid rgba(255,200,120,0.3);cursor:pointer}
+.lbl{color:rgba(200,170,130,0.55);font-size:8px;min-width:28px;text-align:right;letter-spacing:1px}
+.btn{background:rgba(255,255,255,0.05);color:rgba(200,170,130,0.7);border:1px solid rgba(255,160,60,0.15);border-radius:12px;padding:3px 8px;font-size:9px;cursor:pointer;font-family:inherit;transition:all 0.2s;letter-spacing:1px}
 .btn:hover{background:rgba(255,160,60,0.12)}
 .btn.on{background:rgba(255,120,30,0.25);border-color:rgba(255,160,60,0.5);color:rgba(255,220,160,0.95)}
-.btn.accent{background:rgba(80,200,120,0.15);border-color:rgba(80,200,120,0.3);color:rgba(150,255,180,0.8)}
-.btn.accent.on{background:rgba(80,200,120,0.3);color:rgba(200,255,220,0.95)}
-#bpm-val{color:rgba(255,180,80,0.7);font-size:11px;min-width:50px;text-align:center;font-weight:bold}
-/* ── Keyboard ── */
-#keyboard{
-  display:flex;height:50px;position:relative;justify-content:center;padding:2px 0;
-}
-.key{
-  width:32px;height:46px;border-radius:0 0 4px 4px;cursor:pointer;
-  display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;
-  font-size:8px;transition:background 0.1s;position:relative;
-}
-.key.white{
-  background:linear-gradient(180deg,rgba(220,210,200,0.9),rgba(200,190,180,0.85));
-  border:1px solid rgba(100,80,60,0.3);color:rgba(80,60,40,0.5);
-  margin:0 1px;z-index:1;
-}
-.key.white:hover,.key.white.active{background:linear-gradient(180deg,rgba(255,220,150,0.95),rgba(255,200,120,0.9))}
-.key.black{
-  background:linear-gradient(180deg,rgba(40,30,20,0.95),rgba(20,15,10,0.9));
-  border:1px solid rgba(80,60,40,0.4);color:rgba(180,150,120,0.4);
-  width:22px;height:30px;margin:0 -11px;z-index:2;
-}
-.key.black:hover,.key.black.active{background:linear-gradient(180deg,rgba(80,50,20,0.95),rgba(60,35,10,0.9))}
-select.scale-sel{
-  background:rgba(0,0,0,0.4);color:rgba(200,170,130,0.8);
-  border:1px solid rgba(255,160,60,0.2);border-radius:10px;
-  padding:2px 6px;font-size:9px;font-family:inherit;cursor:pointer;outline:none;
-}
+.btn.rec{background:rgba(255,40,40,0.2);border-color:rgba(255,60,60,0.4);color:rgba(255,120,120,0.8)}
+.btn.rec.on{background:rgba(255,40,40,0.5);border-color:rgba(255,80,80,0.7);color:#fff;animation:recPulse 1s infinite}
+@keyframes recPulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.btn.grn{background:rgba(40,200,80,0.15);border-color:rgba(60,200,100,0.3);color:rgba(120,255,150,0.8)}
+.btn.grn.on{background:rgba(40,200,80,0.35);color:rgba(200,255,220,0.95)}
+#bpm-val{color:rgba(255,180,80,0.7);font-size:10px;min-width:40px;text-align:center;font-weight:bold}
+#keyboard{display:flex;height:44px;position:relative;justify-content:center;padding:1px 0}
+.key{position:relative;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding-bottom:3px;font-size:7px;transition:background 0.08s}
+.key.white{width:26px;height:42px;border-radius:0 0 3px 3px;background:linear-gradient(180deg,rgba(230,220,210,0.92),rgba(210,200,190,0.88));border:1px solid rgba(100,80,60,0.25);color:rgba(80,60,40,0.5);margin:0 0.5px;z-index:1}
+.key.white:hover,.key.white.active{background:linear-gradient(180deg,rgba(255,220,140,0.95),rgba(255,200,110,0.92))}
+.key.black{width:18px;height:26px;border-radius:0 0 2px 2px;background:linear-gradient(180deg,rgba(50,40,30,0.95),rgba(25,18,12,0.92));border:1px solid rgba(80,60,40,0.4);color:rgba(180,150,120,0.35);margin:0 -9px;z-index:2}
+.key.black:hover,.key.black.active{background:linear-gradient(180deg,rgba(90,55,20,0.95),rgba(70,40,12,0.92))}
+select.ssel{background:rgba(0,0,0,0.4);color:rgba(200,170,130,0.8);border:1px solid rgba(255,160,60,0.2);border-radius:8px;padding:2px 4px;font-size:8px;font-family:inherit;cursor:pointer;outline:none}
+#mic-meter{width:60px;height:6px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle}
+#mic-meter-fill{height:100%;width:0%;background:linear-gradient(90deg,#4f4,#ff0,#f44);border-radius:3px;transition:width 0.1s}
 </style>
 </head>
 <body>
 <div id="audio-prompt">click to begin</div>
 
 <div id="perf-panel">
-  <!-- Transport bar -->
-  <div id="transport">
-    <span class="lbl">BPM</span>
-    <input type="range" class="sl" style="width:100px" id="sl-bpm" min="50" max="180" value="110" oninput="setBPM(+this.value)">
-    <span id="bpm-val">110</span>
-    <button class="btn" id="btn-tap" onclick="tapTempo()">TAP</button>
-    <span style="flex:1"></span>
-    <span class="lbl">SCALE</span>
-    <select class="scale-sel" id="sel-scale" onchange="setScale(this.value)">
-      <option value="major">Major (Ionian)</option>
-      <option value="dorian" selected>Dorian</option>
-      <option value="mixo">Mixolydian</option>
-      <option value="minor">Minor (Aeolian)</option>
-      <option value="blues">Blues</option>
-      <option value="penta">Pentatonic</option>
-      <option value="tizita">Tizita (Ethiopian)</option>
-      <option value="thai">Thai Pentatonic</option>
-    </select>
-    <span class="lbl">KEY</span>
-    <select class="scale-sel" id="sel-key" onchange="setKey(+this.value)">
-      <option value="0">C</option><option value="1">Db</option><option value="2">D</option>
-      <option value="3">Eb</option><option value="4">E</option><option value="5">F</option>
-      <option value="6">Gb</option><option value="7">G</option><option value="8">Ab</option>
-      <option value="9">A</option><option value="10">Bb</option><option value="11">B</option>
-    </select>
-    <span style="flex:1"></span>
-    <span class="lbl">MASTER</span>
-    <input type="range" class="sl" style="width:60px" min="0" max="100" value="75" oninput="setMaster(+this.value)">
+ <div id="transport">
+  <span class="lbl">BPM</span><input type="range" class="sl" style="width:90px" id="sl-bpm" min="50" max="180" value="110" oninput="C.setBPM(+this.value)"><span id="bpm-val">110</span>
+  <button class="btn" onclick="C.tapTempo()">TAP</button>
+  <span style="flex:0.3"></span>
+  <span class="lbl">SCALE</span>
+  <select class="ssel" id="sel-scale" onchange="C.setScale(this.value)">
+   <option value="major">Major</option><option value="dorian" selected>Dorian</option><option value="mixo">Mixolydian</option>
+   <option value="minor">Minor</option><option value="blues">Blues</option><option value="penta">Pentatonic</option>
+   <option value="tizita">Tizita</option><option value="thai">Thai</option>
+  </select>
+  <span class="lbl">KEY</span>
+  <select class="ssel" id="sel-key" onchange="C.setKey(+this.value)">
+   <option value="0">C</option><option value="1">Db</option><option value="2">D</option><option value="3">Eb</option><option value="4">E</option><option value="5">F</option>
+   <option value="6">Gb</option><option value="7">G</option><option value="8">Ab</option><option value="9">A</option><option value="10">Bb</option><option value="11">B</option>
+  </select>
+  <span style="flex:0.3"></span>
+  <button class="btn rec" id="btn-rec" onclick="C.toggleRec()">REC</button>
+  <button class="btn" id="btn-dl" onclick="C.downloadRec()" style="display:none">SAVE WAV</button>
+  <span style="flex:0.3"></span>
+  <span class="lbl">MASTER</span><input type="range" class="sl" style="width:50px" min="0" max="100" value="75" oninput="C.setMaster(+this.value)">
+ </div>
+ <div id="sections">
+  <div class="section">
+   <div class="sec-title">drums</div>
+   <div class="ctrl-row">
+    <button class="btn on" id="btn-drums" onclick="C.toggleDrums()">ON</button>
+    <button class="btn on" data-ds="jazz" onclick="C.setDS('jazz')">Jazz</button>
+    <button class="btn" data-ds="thai" onclick="C.setDS('thai')">Thai</button>
+    <button class="btn" data-ds="ethio" onclick="C.setDS('ethio')">Ethio</button>
+   </div>
+   <div class="ctrl-row">
+    <span class="lbl">SWG</span><input type="range" class="sl" min="0" max="100" value="55" oninput="C.setSwing(+this.value)">
+    <span class="lbl">VOL</span><input type="range" class="sl" style="width:45px" min="0" max="100" value="60" oninput="C.setDV(+this.value)">
+   </div>
+   <div class="ctrl-row">
+    <span class="lbl">KICK</span><input type="range" class="sl" style="width:45px" min="0" max="100" value="80" oninput="C.setKickVol(+this.value)">
+    <span class="lbl">SNR</span><input type="range" class="sl" style="width:45px" min="0" max="100" value="65" oninput="C.setSnrVol(+this.value)">
+    <span class="lbl">HAT</span><input type="range" class="sl" style="width:45px" min="0" max="100" value="50" oninput="C.setHatVol(+this.value)">
+   </div>
   </div>
-
-  <!-- Sections -->
-  <div id="sections">
-    <!-- Drums -->
-    <div class="section">
-      <div class="sec-title">drums</div>
-      <div class="ctrl-row">
-        <button class="btn on" id="btn-drums" onclick="toggleDrums()">ON</button>
-        <button class="btn on" data-ds="jazz" onclick="setDrumStyle('jazz')">Jazz</button>
-        <button class="btn" data-ds="thai" onclick="setDrumStyle('thai')">Thai</button>
-        <button class="btn" data-ds="ethio" onclick="setDrumStyle('ethio')">Ethio</button>
-      </div>
-      <div class="ctrl-row">
-        <span class="lbl">SWING</span>
-        <input type="range" class="sl" min="0" max="100" value="55" oninput="setSwing(+this.value)">
-        <span class="lbl">VOL</span>
-        <input type="range" class="sl" style="width:50px" min="0" max="100" value="60" oninput="setDrumVol(+this.value)">
-      </div>
-    </div>
-    <!-- Bass -->
-    <div class="section">
-      <div class="sec-title">bass</div>
-      <div class="ctrl-row">
-        <button class="btn on" id="btn-bass" onclick="toggleBass()">ON</button>
-        <button class="btn on" data-bs="walk" onclick="setBassStyle('walk')">Walk</button>
-        <button class="btn" data-bs="root" onclick="setBassStyle('root')">Root</button>
-        <button class="btn" data-bs="octave" onclick="setBassStyle('octave')">Octave</button>
-      </div>
-      <div class="ctrl-row">
-        <span class="lbl">VOL</span>
-        <input type="range" class="sl" min="0" max="100" value="55" oninput="setBassVol(+this.value)">
-        <span class="lbl">TONE</span>
-        <input type="range" class="sl" style="width:50px" min="0" max="100" value="40" oninput="setBassTone(+this.value)">
-      </div>
-    </div>
-    <!-- Organ Keyboard -->
-    <div class="section" style="flex:2">
-      <div class="sec-title">organ</div>
-      <div id="keyboard"></div>
-    </div>
-    <!-- Drone / FX -->
-    <div class="section">
-      <div class="sec-title">drone/fx</div>
-      <div class="ctrl-row">
-        <button class="btn on" id="btn-drone" onclick="toggleDrone()">ON</button>
-        <span class="lbl">LVL</span>
-        <input type="range" class="sl" min="0" max="100" value="35" oninput="setDroneLvl(+this.value)">
-      </div>
-      <div class="ctrl-row">
-        <span class="lbl">VERB</span>
-        <input type="range" class="sl" min="0" max="100" value="50" oninput="setReverb(+this.value)">
-      </div>
-    </div>
+  <div class="section">
+   <div class="sec-title">bass</div>
+   <div class="ctrl-row">
+    <button class="btn on" id="btn-bass" onclick="C.toggleBass()">ON</button>
+    <button class="btn on" data-bs="walk" onclick="C.setBS('walk')">Walk</button>
+    <button class="btn" data-bs="root" onclick="C.setBS('root')">Root</button>
+    <button class="btn" data-bs="octave" onclick="C.setBS('octave')">Oct</button>
+    <button class="btn" data-bs="fifths" onclick="C.setBS('fifths')">1-5</button>
+   </div>
+   <div class="ctrl-row">
+    <span class="lbl">VOL</span><input type="range" class="sl" min="0" max="100" value="55" oninput="C.setBV(+this.value)">
+    <span class="lbl">TONE</span><input type="range" class="sl" style="width:45px" min="0" max="100" value="40" oninput="C.setBT(+this.value)">
+    <span class="lbl">OCT</span>
+    <select class="ssel" onchange="C.setBassOct(+this.value)"><option value="0">Low</option><option value="1" selected>Mid</option><option value="2">Hi</option></select>
+   </div>
   </div>
+  <div class="section" style="flex:2;min-width:280px">
+   <div class="sec-title">organ — keys: Z-/ white, S D F G H J K black</div>
+   <div id="keyboard"></div>
+  </div>
+  <div class="section">
+   <div class="sec-title">mic / input</div>
+   <div class="ctrl-row">
+    <button class="btn grn" id="btn-mic" onclick="C.toggleMic()">MIC</button>
+    <div id="mic-meter"><div id="mic-meter-fill"></div></div>
+   </div>
+   <div class="ctrl-row">
+    <span class="lbl">GAIN</span><input type="range" class="sl" min="0" max="200" value="100" oninput="C.setMicGain(+this.value)">
+   </div>
+   <div class="ctrl-row">
+    <span class="lbl">EQ LO</span><input type="range" class="sl" style="width:40px" min="-12" max="12" value="0" oninput="C.setMicEQ('lo',+this.value)">
+    <span class="lbl">HI</span><input type="range" class="sl" style="width:40px" min="-12" max="12" value="0" oninput="C.setMicEQ('hi',+this.value)">
+   </div>
+  </div>
+  <div class="section">
+   <div class="sec-title">fx / drone</div>
+   <div class="ctrl-row">
+    <button class="btn on" id="btn-drone" onclick="C.toggleDrone()">DRONE</button>
+    <span class="lbl">LVL</span><input type="range" class="sl" style="width:45px" min="0" max="100" value="35" oninput="C.setDL(+this.value)">
+   </div>
+   <div class="ctrl-row">
+    <span class="lbl">VERB</span><input type="range" class="sl" min="0" max="100" value="50" oninput="C.setVerb(+this.value)">
+    <span class="lbl">DLY</span><input type="range" class="sl" style="width:45px" min="0" max="100" value="20" oninput="C.setDelay(+this.value)">
+   </div>
+  </div>
+ </div>
 </div>
 
 <script src="three.min.js"></script>
@@ -191,804 +158,493 @@ select.scale-sel{
 const WS_URL=`ws://${location.hostname}:8765`;
 let S={oscillator:{x:0,y:0,z:0,w:0.5},fourier:new Array(32).fill(0),block:{number:0,time_variance:0.1},phase:0,amplitude:0.5,tempo:0.5,sine_mix:0,tokens:[]};
 let ST=JSON.parse(JSON.stringify(S));
-const LERP=0.07;
 function lerpV(a,b,t){return a+(b-a)*t}
-function lerpState(){
-  S.oscillator.x=lerpV(S.oscillator.x,ST.oscillator.x,LERP);S.oscillator.y=lerpV(S.oscillator.y,ST.oscillator.y,LERP);
-  S.oscillator.z=lerpV(S.oscillator.z,ST.oscillator.z,LERP);S.oscillator.w=lerpV(S.oscillator.w,ST.oscillator.w,LERP);
-  S.phase=lerpV(S.phase,ST.phase,LERP);S.amplitude=lerpV(S.amplitude,ST.amplitude,LERP);
-  S.tempo=lerpV(S.tempo,ST.tempo,LERP);S.sine_mix=lerpV(S.sine_mix,ST.sine_mix,LERP);
-  S.block.time_variance=lerpV(S.block.time_variance,ST.block.time_variance,LERP);
-  for(let i=0;i<32;i++)S.fourier[i]=lerpV(S.fourier[i]||0,ST.fourier[i]||0,LERP);
-}
+function lerpState(){const L=0.07;
+S.oscillator.x=lerpV(S.oscillator.x,ST.oscillator.x,L);S.oscillator.y=lerpV(S.oscillator.y,ST.oscillator.y,L);
+S.oscillator.z=lerpV(S.oscillator.z,ST.oscillator.z,L);S.oscillator.w=lerpV(S.oscillator.w,ST.oscillator.w,L);
+S.phase=lerpV(S.phase,ST.phase,L);S.amplitude=lerpV(S.amplitude,ST.amplitude,L);
+S.tempo=lerpV(S.tempo,ST.tempo,L);S.sine_mix=lerpV(S.sine_mix,ST.sine_mix,L);
+S.block.time_variance=lerpV(S.block.time_variance,ST.block.time_variance,L);
+for(let i=0;i<32;i++)S.fourier[i]=lerpV(S.fourier[i]||0,ST.fourier[i]||0,L);}
 let drumImpact=0;
-let ws;
-function connectWS(){
-  ws=new WebSocket(WS_URL);
-  ws.onmessage=e=>{const d=JSON.parse(e.data);ST.oscillator=d.oscillator;ST.fourier=d.fourier;ST.block=d.block;ST.phase=d.phase;ST.amplitude=d.amplitude;ST.tempo=d.tempo;ST.sine_mix=d.sine_mix||0;ST.tokens=d.tokens||[];};
-  ws.onclose=()=>setTimeout(connectWS,2000);ws.onerror=()=>ws.close();
-}
-connectWS();
+let ws;(function cWS(){ws=new WebSocket(WS_URL);ws.onmessage=e=>{const d=JSON.parse(e.data);Object.assign(ST,d)};ws.onclose=()=>setTimeout(cWS,2000);ws.onerror=()=>ws.close()})();
 
 // ═════════════════════════════════════════════════════════════════════════════
-// THREE.JS — SOLAR SYSTEM + DRAGONS
+// THREE.JS SCENE — Solar System + Space Creatures
 // ═════════════════════════════════════════════════════════════════════════════
 const renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(window.innerWidth,window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
+renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
 renderer.toneMapping=THREE.ReinhardToneMapping;renderer.toneMappingExposure=1.8;
 document.body.appendChild(renderer.domElement);
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x020206);
-const camera=new THREE.PerspectiveCamera(55,window.innerWidth/window.innerHeight,0.1,800);
-camera.position.set(0,40,90);
-const composer=new THREE.EffectComposer(renderer);
-composer.addPass(new THREE.RenderPass(scene,camera));
-const bloomPass=new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth,window.innerHeight),1.5,0.8,0.15);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x020206);
+const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,0.1,800);camera.position.set(0,40,90);
+const composer=new THREE.EffectComposer(renderer);composer.addPass(new THREE.RenderPass(scene,camera));
+const bloomPass=new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),1.5,0.8,0.15);
 composer.addPass(bloomPass);
 
 // Stars
-const SN=6000,sGeo=new THREE.BufferGeometry(),sP=new Float32Array(SN*3),sC=new Float32Array(SN*3);
-for(let i=0;i<SN;i++){const r=200+Math.random()*300,th=Math.random()*6.283,ph=Math.acos(2*Math.random()-1);
-sP[i*3]=r*Math.sin(ph)*Math.cos(th);sP[i*3+1]=r*Math.sin(ph)*Math.sin(th);sP[i*3+2]=r*Math.cos(ph);
-const t=0.5+Math.random()*0.5;sC[i*3]=0.7+t*0.3;sC[i*3+1]=0.7+t*0.2;sC[i*3+2]=0.8+t*0.2;}
-sGeo.setAttribute('position',new THREE.BufferAttribute(sP,3));
-sGeo.setAttribute('color',new THREE.BufferAttribute(sC,3));
-scene.add(new THREE.Points(sGeo,new THREE.PointsMaterial({size:0.7,vertexColors:true,transparent:true,opacity:0.6})));
+(function(){const N=6000,g=new THREE.BufferGeometry(),p=new Float32Array(N*3),c=new Float32Array(N*3);
+for(let i=0;i<N;i++){const r=200+Math.random()*300,th=Math.random()*6.283,ph=Math.acos(2*Math.random()-1);
+p[i*3]=r*Math.sin(ph)*Math.cos(th);p[i*3+1]=r*Math.sin(ph)*Math.sin(th);p[i*3+2]=r*Math.cos(ph);
+const t=0.5+Math.random()*0.5;c[i*3]=0.7+t*0.3;c[i*3+1]=0.7+t*0.2;c[i*3+2]=0.8+t*0.2;}
+g.setAttribute('position',new THREE.BufferAttribute(p,3));g.setAttribute('color',new THREE.BufferAttribute(c,3));
+scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:0.7,vertexColors:true,transparent:true,opacity:0.6})));})();
 
 // Sun
 const sunMat=new THREE.ShaderMaterial({uniforms:{uTime:{value:0},uW:{value:0.5},uImpact:{value:0}},
-  vertexShader:`varying vec3 vN;varying vec2 vU;void main(){vN=normalize(normalMatrix*normal);vU=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-  fragmentShader:`uniform float uTime,uW,uImpact;varying vec3 vN;varying vec2 vU;
-  vec3 hsl(float h,float s,float l){float c=(1.0-abs(2.0*l-1.0))*s;float x=c*(1.0-abs(mod(h*6.0,2.0)-1.0));float m=l-c*0.5;vec3 r;float hh=h*6.0;if(hh<1.0)r=vec3(c,x,0);else if(hh<2.0)r=vec3(x,c,0);else if(hh<3.0)r=vec3(0,c,x);else if(hh<4.0)r=vec3(0,x,c);else if(hh<5.0)r=vec3(x,0,c);else r=vec3(c,0,x);return r+m;}
-  void main(){float p=0.7+sin(uTime*1.5)*0.15+uImpact*0.4;float f=pow(1.0-abs(dot(vN,vec3(0,0,1))),2.0);float n=sin(vU.x*30.0+uTime*2.0)*sin(vU.y*25.0+uTime*1.5)*0.15;float h=mod(uW*0.8+0.08+n*0.1,1.0);vec3 co=hsl(h,0.9,0.6)*p;vec3 cr=hsl(mod(h+0.05,1.0),1.0,0.7)*f*1.5;gl_FragColor=vec4(co+cr+n*0.3,1.0);}`,
-});
+vertexShader:`varying vec3 vN;varying vec2 vU;void main(){vN=normalize(normalMatrix*normal);vU=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+fragmentShader:`uniform float uTime,uW,uImpact;varying vec3 vN;varying vec2 vU;
+vec3 hsl(float h,float s,float l){float c=(1.0-abs(2.0*l-1.0))*s;float x=c*(1.0-abs(mod(h*6.0,2.0)-1.0));float m=l-c*0.5;vec3 r;float hh=h*6.0;if(hh<1.0)r=vec3(c,x,0);else if(hh<2.0)r=vec3(x,c,0);else if(hh<3.0)r=vec3(0,c,x);else if(hh<4.0)r=vec3(0,x,c);else if(hh<5.0)r=vec3(x,0,c);else r=vec3(c,0,x);return r+m;}
+void main(){float p=0.7+sin(uTime*1.5)*0.15+uImpact*0.4;float f=pow(1.0-abs(dot(vN,vec3(0,0,1))),2.0);float n=sin(vU.x*30.0+uTime*2.0)*sin(vU.y*25.0+uTime*1.5)*0.15;float h=mod(uW*0.8+0.08+n*0.1,1.0);gl_FragColor=vec4(hsl(h,0.9,0.6)*p+hsl(mod(h+0.05,1.0),1.0,0.7)*f*1.5+n*0.3,1.0);}`});
 const sun=new THREE.Mesh(new THREE.SphereGeometry(5,48,48),sunMat);scene.add(sun);
-// Sun glow
-const gc=document.createElement('canvas');gc.width=gc.height=256;const gx=gc.getContext('2d');
-const gr=gx.createRadialGradient(128,128,0,128,128,128);
+const gc=document.createElement('canvas');gc.width=gc.height=256;const gx=gc.getContext('2d'),gr=gx.createRadialGradient(128,128,0,128,128,128);
 gr.addColorStop(0,'rgba(255,200,80,0.4)');gr.addColorStop(0.3,'rgba(255,140,40,0.15)');gr.addColorStop(1,'rgba(255,80,0,0)');
 gx.fillStyle=gr;gx.fillRect(0,0,256,256);
 const sunGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(gc),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
 sunGlow.scale.set(30,30,1);scene.add(sunGlow);
 
 // Planets
-const PCFG=[
-  {name:'ETH',r:1.8,o:14,spd:0.3,h:0.6,ring:1},{name:'BTC',r:2.5,o:22,spd:0.15,h:0.1,ring:0},
-  {name:'SOL',r:1.2,o:30,spd:0.45,h:0.45,ring:0},{name:'LINK',r:1.0,o:37,spd:0.35,h:0.65,ring:1},
-  {name:'UNI',r:0.9,o:43,spd:0.5,h:0.8,ring:0},{name:'AAVE',r:1.1,o:49,spd:0.25,h:0.3,ring:0},
-  {name:'ARB',r:0.7,o:55,spd:0.55,h:0.55,ring:1},{name:'OP',r:0.8,o:60,spd:0.4,h:0.0,ring:0},
-];
+const PCFG=[{n:'ETH',r:1.8,o:14,s:.3,h:.6,rn:1},{n:'BTC',r:2.5,o:22,s:.15,h:.1,rn:0},{n:'SOL',r:1.2,o:30,s:.45,h:.45,rn:0},{n:'LINK',r:1,o:37,s:.35,h:.65,rn:1},{n:'UNI',r:.9,o:43,s:.5,h:.8,rn:0},{n:'AAVE',r:1.1,o:49,s:.25,h:.3,rn:0},{n:'ARB',r:.7,o:55,s:.55,h:.55,rn:1},{n:'OP',r:.8,o:60,s:.4,h:0,rn:0}];
 const planets=[];
-PCFG.forEach((c,idx)=>{
-  const g=new THREE.Group();
-  const oc=new THREE.EllipseCurve(0,0,c.o,c.o*0.92,0,Math.PI*2,false,0);
-  const op=oc.getPoints(128);
-  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(op.map(p=>new THREE.Vector3(p.x,0,p.y))),
-    new THREE.LineBasicMaterial({color:new THREE.Color().setHSL(c.h,0.3,0.12),transparent:true,opacity:0.25})));
-  const pm=new THREE.MeshStandardMaterial({color:new THREE.Color().setHSL(c.h,0.7,0.4),emissive:new THREE.Color().setHSL(c.h,0.8,0.15),roughness:0.6,metalness:0.3});
-  const pl=new THREE.Mesh(new THREE.SphereGeometry(c.r,32,32),pm);g.add(pl);
-  g.add(new THREE.Mesh(new THREE.SphereGeometry(c.r*1.25,20,20),new THREE.MeshBasicMaterial({color:new THREE.Color().setHSL(c.h,0.9,0.5),transparent:true,opacity:0.1,side:THREE.BackSide})));
-  if(c.ring){const rm=new THREE.Mesh(new THREE.RingGeometry(c.r*1.6,c.r*2.4,48),new THREE.MeshBasicMaterial({color:new THREE.Color().setHSL(c.h,0.5,0.4),transparent:true,opacity:0.2,side:THREE.DoubleSide}));rm.rotation.x=Math.PI*0.45;g.add(rm);}
-  scene.add(g);planets.push({group:g,planet:pl,cfg:c,angle:idx*Math.PI*0.25});
-});
-const sunLight=new THREE.PointLight(0xffeedd,2.5,200);scene.add(sunLight);
-scene.add(new THREE.AmbientLight(0x112244,0.3));
+PCFG.forEach((c,i)=>{const g=new THREE.Group(),oc=new THREE.EllipseCurve(0,0,c.o,c.o*.92,0,Math.PI*2,false,0);
+scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(oc.getPoints(128).map(p=>new THREE.Vector3(p.x,0,p.y))),new THREE.LineBasicMaterial({color:new THREE.Color().setHSL(c.h,.3,.12),transparent:true,opacity:.25})));
+const pm=new THREE.MeshStandardMaterial({color:new THREE.Color().setHSL(c.h,.7,.4),emissive:new THREE.Color().setHSL(c.h,.8,.15),roughness:.6,metalness:.3});
+const pl=new THREE.Mesh(new THREE.SphereGeometry(c.r,32,32),pm);g.add(pl);
+g.add(new THREE.Mesh(new THREE.SphereGeometry(c.r*1.25,16,16),new THREE.MeshBasicMaterial({color:new THREE.Color().setHSL(c.h,.9,.5),transparent:true,opacity:.1,side:THREE.BackSide})));
+if(c.rn){const rm=new THREE.Mesh(new THREE.RingGeometry(c.r*1.6,c.r*2.4,48),new THREE.MeshBasicMaterial({color:new THREE.Color().setHSL(c.h,.5,.4),transparent:true,opacity:.2,side:THREE.DoubleSide}));rm.rotation.x=Math.PI*.45;g.add(rm);}
+scene.add(g);planets.push({group:g,planet:pl,cfg:c,angle:i*Math.PI*.25});});
+scene.add(new THREE.PointLight(0xffeedd,2.5,200));scene.add(new THREE.AmbientLight(0x112244,.3));
+const sunLight=scene.children.find(c=>c.isPointLight);
 
 // Dust belt
-const DN=8000,dGeo=new THREE.BufferGeometry(),dP=new Float32Array(DN*3),dR=new Float32Array(DN);
-for(let i=0;i<DN;i++){const r=25+Math.random()*40,a=Math.random()*6.283;dP[i*3]=Math.cos(a)*r;dP[i*3+1]=(Math.random()-0.5)*4;dP[i*3+2]=Math.sin(a)*r;dR[i]=Math.random();}
-dGeo.setAttribute('position',new THREE.BufferAttribute(dP,3));dGeo.setAttribute('aRand',new THREE.BufferAttribute(dR,1));
-const dMat=new THREE.ShaderMaterial({uniforms:{uTime:{value:0},uW:{value:0.5},uImpact:{value:0}},
-  vertexShader:`uniform float uTime,uImpact;attribute float aRand;varying float vA,vH;
-  void main(){vec3 p=position;float a=uTime*0.02*(0.5+aRand*0.5);float c=cos(a),s=sin(a);vec3 rp=vec3(p.x*c-p.z*s,p.y+sin(uTime*0.3+aRand*10.0)*0.5,p.x*s+p.z*c);rp*=1.0+uImpact*0.1;vec4 mv=modelViewMatrix*vec4(rp,1.0);gl_Position=projectionMatrix*mv;gl_PointSize=max(1.0,(1.5+aRand)*(150.0/-mv.z));vA=0.2+aRand*0.3;vH=aRand;}`,
-  fragmentShader:`varying float vA,vH;uniform float uW;
-  vec3 hsl(float h,float s,float l){float c=(1.0-abs(2.0*l-1.0))*s;float x=c*(1.0-abs(mod(h*6.0,2.0)-1.0));float m=l-c*0.5;vec3 r;float hh=h*6.0;if(hh<1.0)r=vec3(c,x,0);else if(hh<2.0)r=vec3(x,c,0);else if(hh<3.0)r=vec3(0,c,x);else if(hh<4.0)r=vec3(0,x,c);else if(hh<5.0)r=vec3(x,0,c);else r=vec3(c,0,x);return r+m;}
-  void main(){vec2 uv=gl_PointCoord-0.5;float d=length(uv);if(d>0.5)discard;float s=exp(-d*d*10.0);vec3 c=hsl(mod(vH+uW*0.5,1.0),0.5,0.5);gl_FragColor=vec4(c*s*1.2,s*vA);}`,
-  transparent:true,blending:THREE.AdditiveBlending,depthWrite:false});
-scene.add(new THREE.Points(dGeo,dMat));
+(function(){const N=8000,g=new THREE.BufferGeometry(),p=new Float32Array(N*3),d=new Float32Array(N);
+for(let i=0;i<N;i++){const r=25+Math.random()*40,a=Math.random()*6.283;p[i*3]=Math.cos(a)*r;p[i*3+1]=(Math.random()-.5)*4;p[i*3+2]=Math.sin(a)*r;d[i]=Math.random();}
+g.setAttribute('position',new THREE.BufferAttribute(p,3));g.setAttribute('aRand',new THREE.BufferAttribute(d,1));
+const m=new THREE.ShaderMaterial({uniforms:{uTime:{value:0},uW:{value:0.5},uImpact:{value:0}},
+vertexShader:`uniform float uTime,uImpact;attribute float aRand;varying float vA,vH;void main(){vec3 p=position;float a=uTime*0.02*(0.5+aRand*0.5);float c=cos(a),s=sin(a);vec3 rp=vec3(p.x*c-p.z*s,p.y+sin(uTime*0.3+aRand*10.0)*0.5,p.x*s+p.z*c);rp*=1.0+uImpact*0.1;vec4 mv=modelViewMatrix*vec4(rp,1.0);gl_Position=projectionMatrix*mv;gl_PointSize=max(1.0,(1.5+aRand)*(150.0/-mv.z));vA=0.2+aRand*0.3;vH=aRand;}`,
+fragmentShader:`varying float vA,vH;uniform float uW;vec3 hsl(float h,float s,float l){float c=(1.0-abs(2.0*l-1.0))*s;float x=c*(1.0-abs(mod(h*6.0,2.0)-1.0));float m=l-c*0.5;vec3 r;float hh=h*6.0;if(hh<1.0)r=vec3(c,x,0);else if(hh<2.0)r=vec3(x,c,0);else if(hh<3.0)r=vec3(0,c,x);else if(hh<4.0)r=vec3(0,x,c);else if(hh<5.0)r=vec3(x,0,c);else r=vec3(c,0,x);return r+m;}void main(){vec2 uv=gl_PointCoord-0.5;float d=length(uv);if(d>0.5)discard;float s=exp(-d*d*10.0);gl_FragColor=vec4(hsl(mod(vH+uW*0.5,1.0),0.5,0.5)*s*1.2,s*vA);}`,
+transparent:true,blending:THREE.AdditiveBlending,depthWrite:false});
+window._dustMat=m;scene.add(new THREE.Points(g,m));})();
 
-// ── PROCEDURAL DRAGONS ───────────────────────────────────────────────────────
-const DRAGON_COUNT = 5;
-const dragons = [];
-const dragonMat = new THREE.MeshBasicMaterial({color:0xff6600,transparent:true,opacity:0.7,side:THREE.DoubleSide});
+// ═══ ORGANIC 3D CREATURES — Space Whales + Phoenix Birds ════════════════════
+const creatures=[];
 
-function buildDragon(hue) {
-  const group = new THREE.Group();
-  const col = new THREE.Color().setHSL(hue, 0.9, 0.5);
-  const glowCol = new THREE.Color().setHSL(hue, 1.0, 0.65);
+function buildWhale(hue,size){
+  const group=new THREE.Group();
+  const col=new THREE.Color().setHSL(hue,.8,.45);
+  const glow=new THREE.Color().setHSL(hue,1,.6);
+  const mat=new THREE.MeshStandardMaterial({color:col,emissive:glow,emissiveIntensity:.25,roughness:.5,metalness:.4,transparent:true,opacity:.85});
+  // Body — elongated ellipsoid via scaled sphere
+  const body=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),mat);
+  body.scale.set(size*1.2,size*.7,size*2.8);group.add(body);
+  // Head bump
+  const head=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),mat.clone());
+  head.scale.set(size*.65,size*.55,size*.7);head.position.z=size*2.4;group.add(head);
+  // Eyes
+  const eyeM=new THREE.MeshBasicMaterial({color:0xeeffff});
+  const eL=new THREE.Mesh(new THREE.SphereGeometry(size*.08,8,8),eyeM);eL.position.set(-size*.35,size*.2,size*2.6);group.add(eL);
+  const eR=eL.clone();eR.position.x=size*.35;group.add(eR);
+  // Tail flukes — two flat scaled ellipsoids
+  const flukeMat=mat.clone();flukeMat.transparent=true;flukeMat.opacity=.7;
+  const flukeL=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),flukeMat);
+  flukeL.scale.set(size*1.2,size*.08,size*.6);flukeL.position.set(-size*.3,0,-size*2.8);flukeL.rotation.z=.3;group.add(flukeL);
+  const flukeR=flukeL.clone();flukeR.position.x=size*.3;flukeR.rotation.z=-.3;group.add(flukeR);
+  // Pectoral fins — ellipsoids to the side
+  const finMat=mat.clone();finMat.transparent=true;finMat.opacity=.65;
+  const finL=new THREE.Mesh(new THREE.SphereGeometry(1,10,6),finMat);
+  finL.scale.set(size*1.5,size*.06,size*.5);finL.position.set(-size*1,0,size*.5);finL.rotation.z=.2;group.add(finL);
+  const finR=finL.clone();finR.position.x=size*1;finR.rotation.z=-.2;group.add(finR);
+  // Belly glow
+  const bellyMat=new THREE.MeshBasicMaterial({color:glow,transparent:true,opacity:.15,side:THREE.BackSide});
+  const belly=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),bellyMat);
+  belly.scale.set(size*1.3,size*.8,size*3);group.add(belly);
 
-  // Body: segmented tube (spine)
-  const SEGS = 20;
-  const bodyPts = [];
-  for (let i = 0; i < SEGS; i++) bodyPts.push(new THREE.Vector3(0, 0, -i * 0.8));
-  const curve = new THREE.CatmullRomCurve3(bodyPts);
-  const bodyGeo = new THREE.TubeGeometry(curve, SEGS * 2, 0.35, 8, false);
-  const bodyMat = new THREE.MeshStandardMaterial({color: col, emissive: glowCol, emissiveIntensity: 0.3, roughness: 0.4, metalness: 0.5});
-  const body = new THREE.Mesh(bodyGeo, bodyMat);
-  group.add(body);
-
-  // Head: cone
-  const headGeo = new THREE.ConeGeometry(0.5, 1.5, 8);
-  const headMat = new THREE.MeshStandardMaterial({color: col, emissive: glowCol, emissiveIntensity: 0.4, roughness: 0.3, metalness: 0.6});
-  const head = new THREE.Mesh(headGeo, headMat);
-  head.rotation.x = Math.PI / 2;
-  head.position.z = 0.5;
-  group.add(head);
-
-  // Eyes (two small bright spheres)
-  const eyeMat = new THREE.MeshBasicMaterial({color: 0xffff80});
-  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), eyeMat);
-  eyeL.position.set(-0.25, 0.2, 0.6);
-  group.add(eyeL);
-  const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), eyeMat);
-  eyeR.position.set(0.25, 0.2, 0.6);
-  group.add(eyeR);
-
-  // Wings (two flat triangle shapes)
-  const wingShape = new THREE.Shape();
-  wingShape.moveTo(0, 0);
-  wingShape.lineTo(3, 1.5);
-  wingShape.lineTo(2.5, -0.5);
-  wingShape.lineTo(1.5, -0.3);
-  wingShape.lineTo(0, 0);
-  const wingGeo = new THREE.ShapeGeometry(wingShape);
-  const wingMat = new THREE.MeshStandardMaterial({color: col, emissive: glowCol, emissiveIntensity: 0.2, transparent: true, opacity: 0.6, side: THREE.DoubleSide, roughness: 0.5});
-
-  const wingL = new THREE.Mesh(wingGeo, wingMat.clone());
-  wingL.position.set(0, 0.2, -3);
-  wingL.rotation.y = -0.3;
-  group.add(wingL);
-
-  const wingR = new THREE.Mesh(wingGeo, wingMat.clone());
-  wingR.position.set(0, 0.2, -3);
-  wingR.rotation.y = Math.PI + 0.3;
-  wingR.scale.x = -1;
-  group.add(wingR);
-
-  // Tail spike
-  const tailGeo = new THREE.ConeGeometry(0.2, 2, 6);
-  const tail = new THREE.Mesh(tailGeo, new THREE.MeshStandardMaterial({color: col, emissive: glowCol, emissiveIntensity: 0.3}));
-  tail.rotation.x = -Math.PI / 2;
-  tail.position.z = -SEGS * 0.8 - 0.5;
-  group.add(tail);
-
-  // Fire breath particles (trail sprite)
-  const fc = document.createElement('canvas'); fc.width=fc.height=64;
-  const fx = fc.getContext('2d');
-  const fg = fx.createRadialGradient(32,32,0,32,32,32);
-  fg.addColorStop(0, `rgba(255,200,50,0.8)`);
-  fg.addColorStop(0.5, `rgba(255,100,0,0.3)`);
-  fg.addColorStop(1, 'rgba(255,50,0,0)');
-  fx.fillStyle=fg; fx.fillRect(0,0,64,64);
-  const fireTex = new THREE.CanvasTexture(fc);
-  const fire = new THREE.Sprite(new THREE.SpriteMaterial({map:fireTex, transparent:true, blending:THREE.AdditiveBlending}));
-  fire.scale.set(2,2,1);
-  fire.position.z = 1.2;
-  group.add(fire);
-
-  group.scale.set(1.5, 1.5, 1.5);
   scene.add(group);
-  return { group, wingL, wingR, fire, body, hue };
+  return{group,body,finL,finR,flukeL,flukeR,hue,mat};
 }
 
-for (let i = 0; i < DRAGON_COUNT; i++) {
-  const hue = (i * 0.18 + 0.05) % 1;
-  const d = buildDragon(hue);
-  d.orbitR = 30 + i * 12;
-  d.orbitSpeed = 0.06 + i * 0.015;
-  d.orbitTilt = (Math.random() - 0.5) * 0.8;
-  d.yAmp = 8 + Math.random() * 12;
-  d.phase = i * 1.3;
-  d.flapSpeed = 3 + Math.random() * 2;
-  dragons.push(d);
-}
-
-function updateDragons(t) {
-  for (const d of dragons) {
-    const a = t * d.orbitSpeed + d.phase;
-    const r = d.orbitR + Math.sin(t * 0.15 + d.phase) * 8 + drumImpact * 5;
-    const x = Math.cos(a) * r;
-    const z = Math.sin(a) * r * 0.9;
-    const y = Math.sin(a * 1.5 + d.phase) * d.yAmp + Math.sin(t * 0.3) * 3;
-
-    d.group.position.set(x, y, z);
-
-    // Face direction of travel
-    const nextA = a + 0.02;
-    const nx = Math.cos(nextA) * r;
-    const nz = Math.sin(nextA) * r * 0.9;
-    d.group.lookAt(nx, y + Math.sin(t * 0.5) * 2, nz);
-
-    // Wing flap
-    const flap = Math.sin(t * d.flapSpeed) * 0.5;
-    d.wingL.rotation.z = 0.2 + flap + drumImpact * 0.5;
-    d.wingR.rotation.z = -(0.2 + flap + drumImpact * 0.5);
-
-    // Fire breath pulses with drum
-    d.fire.scale.setScalar(1.5 + drumImpact * 4 + Math.sin(t * 2) * 0.5);
-    d.fire.material.opacity = 0.3 + drumImpact * 0.6;
-
-    // Color shift
-    const h = (d.hue + S.oscillator.w * 0.3 + t * 0.01) % 1;
-    d.body.material.emissive.setHSL(h, 1.0, 0.2 + drumImpact * 0.2);
+function buildPhoenix(hue,size){
+  const group=new THREE.Group();
+  const col=new THREE.Color().setHSL(hue,.9,.5);
+  const glow=new THREE.Color().setHSL(hue,1,.65);
+  const mat=new THREE.MeshStandardMaterial({color:col,emissive:glow,emissiveIntensity:.3,roughness:.4,metalness:.5,transparent:true,opacity:.8});
+  // Body — tapered ellipsoid
+  const body=new THREE.Mesh(new THREE.SphereGeometry(1,20,12),mat);
+  body.scale.set(size*.4,size*.35,size*1.6);group.add(body);
+  // Head
+  const head=new THREE.Mesh(new THREE.SphereGeometry(1,12,10),mat.clone());
+  head.scale.set(size*.22,size*.2,size*.3);head.position.z=size*1.5;group.add(head);
+  // Beak
+  const beak=new THREE.Mesh(new THREE.ConeGeometry(size*.08,size*.3,6),new THREE.MeshStandardMaterial({color:0xffcc44,emissive:0xff8800,emissiveIntensity:.3}));
+  beak.rotation.x=Math.PI/2;beak.position.z=size*1.75;group.add(beak);
+  // Eyes
+  const eyeM=new THREE.MeshBasicMaterial({color:0xffff88});
+  const eL=new THREE.Mesh(new THREE.SphereGeometry(size*.04,6,6),eyeM);eL.position.set(-size*.14,size*.1,size*1.55);group.add(eL);
+  const eR=eL.clone();eR.position.x=size*.14;group.add(eR);
+  // Wings — wide ellipsoid flats
+  const wingMat=mat.clone();wingMat.transparent=true;wingMat.opacity=.6;wingMat.side=THREE.DoubleSide;
+  const wingL=new THREE.Mesh(new THREE.SphereGeometry(1,14,6),wingMat);
+  wingL.scale.set(size*2.2,size*.04,size*1);wingL.position.set(-size*.6,size*.1,0);group.add(wingL);
+  const wingR=wingL.clone();wingR.position.x=size*.6;group.add(wingR);
+  // Tail feathers — stretched thin ellipsoids
+  const tailMat=mat.clone();tailMat.transparent=true;tailMat.opacity=.5;
+  for(let i=0;i<3;i++){
+    const t=new THREE.Mesh(new THREE.SphereGeometry(1,8,4),tailMat);
+    t.scale.set(size*.15,size*.03,size*(1.5+i*.4));
+    t.position.set((i-1)*size*.2,0,-size*(1.8+i*.2));
+    t.rotation.y=(i-1)*.1;group.add(t);
   }
+  // Fire trail
+  const fc=document.createElement('canvas');fc.width=fc.height=64;const fx=fc.getContext('2d'),fg=fx.createRadialGradient(32,32,0,32,32,32);
+  fg.addColorStop(0,'rgba(255,200,50,0.7)');fg.addColorStop(0.5,'rgba(255,80,0,0.25)');fg.addColorStop(1,'rgba(255,30,0,0)');
+  fx.fillStyle=fg;fx.fillRect(0,0,64,64);
+  const fire=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(fc),transparent:true,blending:THREE.AdditiveBlending}));
+  fire.scale.set(size*2,size*2,1);fire.position.z=-size*2.5;group.add(fire);
+
+  scene.add(group);
+  return{group,body,wingL,wingR,fire,hue,mat};
 }
 
-// Floating glyphs
+// Create 3 whales + 2 phoenixes
+[{fn:buildWhale,h:.58,sz:1.8,oR:35,oS:.04,yA:12,ph:0},{fn:buildWhale,h:.75,sz:1.2,oR:50,oS:.03,yA:18,ph:2},
+ {fn:buildWhale,h:.35,sz:1.5,oR:65,oS:.025,yA:10,ph:4},
+ {fn:buildPhoenix,h:.05,sz:1.6,oR:28,oS:.06,yA:15,ph:1},{fn:buildPhoenix,h:.12,sz:1.3,oR:45,oS:.05,yA:20,ph:3}
+].forEach(c=>{
+  const cr=c.fn(c.h,c.sz);
+  cr.orbitR=c.oR;cr.orbitSpeed=c.oS;cr.yAmp=c.yA;cr.phase=c.ph;
+  cr.flapSpeed=2.5+Math.random()*2;cr.isWhale=!!cr.flukeL;
+  creatures.push(cr);
+});
+
+function updateCreatures(t){
+  creatures.forEach(cr=>{
+    const a=t*cr.orbitSpeed+cr.phase;
+    const r=cr.orbitR+Math.sin(t*.12+cr.phase)*10+drumImpact*5;
+    const x=Math.cos(a)*r,z=Math.sin(a)*r*.9;
+    const y=Math.sin(a*1.3+cr.phase)*cr.yAmp+Math.sin(t*.25)*3;
+    cr.group.position.set(x,y,z);
+    // Face direction
+    const na=a+.015,nx=Math.cos(na)*r,nz=Math.sin(na)*r*.9;
+    cr.group.lookAt(nx,y+Math.sin(t*.4)*2,nz);
+    // Organic undulation
+    const wave=Math.sin(t*1.2+cr.phase)*.08;
+    cr.group.rotation.z=wave;
+    if(cr.isWhale){
+      // Whale: fins sweep, tail flukes wave
+      const finWave=Math.sin(t*cr.flapSpeed)*.25;
+      cr.finL.rotation.z=.2+finWave+drumImpact*.3;
+      cr.finR.rotation.z=-.2-finWave-drumImpact*.3;
+      cr.flukeL.rotation.x=Math.sin(t*1.5+cr.phase)*.3;
+      cr.flukeR.rotation.x=Math.sin(t*1.5+cr.phase)*.3;
+      cr.body.scale.y=cr.group.scale.y*(1+Math.sin(t*.8)*.03); // breathing
+    }else{
+      // Phoenix: wing flap + fire trail
+      const flap=Math.sin(t*cr.flapSpeed)*.4+drumImpact*.5;
+      cr.wingL.rotation.z=.1+flap;cr.wingR.rotation.z=-.1-flap;
+      cr.fire.scale.setScalar(1.5+drumImpact*4+Math.sin(t*2)*.4);
+      cr.fire.material.opacity=.25+drumImpact*.5;
+    }
+    const h=(cr.hue+S.oscillator.w*.3+t*.008)%1;
+    cr.mat.emissive.setHSL(h,1,.18+drumImpact*.15);
+  });
+}
+
+// Glyphs
 const glyphs=[];
-function createGlyph(idx){const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');const tx=new THREE.CanvasTexture(c);
-const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:0.7}));sp.scale.set(6,6,1);
-sp.userData={canvas:c,ctx:x,tex:tx,oR:18+Math.random()*20,oS:0.012+Math.random()*0.02,oO:idx*Math.PI*2/10,bS:0.2+Math.random()*0.3,bA:3+Math.random()*5,zO:(Math.random()-0.5)*20,yO:8+Math.random()*15};
-scene.add(sp);return sp;}
-for(let i=0;i<10;i++)glyphs.push(createGlyph(i));
-function updateGlyphs(t){const tk=ST.tokens||[];for(let i=0;i<glyphs.length;i++){const g=glyphs[i],u=g.userData,s=u.canvas.width;
-let txt;if(i<tk.length){const v=tk[i];txt=`${v.name} $${v.price.toFixed(2)}`;}else if(i===tk.length)txt=`BLK ${S.block.number}`;else if(i===tk.length+1)txt=`\u03C6 ${S.phase.toFixed(3)}`;else txt=`W ${S.oscillator.w.toFixed(3)}`;
-u.ctx.clearRect(0,0,s,s);u.ctx.font=`${Math.floor(s*0.14)}px 'Courier New',monospace`;u.ctx.textAlign='center';u.ctx.textBaseline='middle';
-u.ctx.fillStyle=`hsla(${(S.oscillator.w*360+i*36)%360},70%,75%,0.7)`;u.ctx.fillText(txt,s/2,s/2);u.tex.needsUpdate=true;
-const a=t*u.oS+u.oO;g.position.set(Math.cos(a)*u.oR, u.yO+Math.sin(t*u.bS)*u.bA, u.zO+Math.sin(t*0.1+u.oO)*6);
-g.material.opacity=0.2+S.oscillator.w*0.3+drumImpact*0.2;}}
+(function(){for(let i=0;i<10;i++){const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d'),tx=new THREE.CanvasTexture(c);
+const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.7}));sp.scale.set(6,6,1);
+sp.userData={c,x,tx,oR:18+Math.random()*20,oS:.012+Math.random()*.02,oO:i*Math.PI*2/10,bS:.2+Math.random()*.3,bA:3+Math.random()*5,zO:(Math.random()-.5)*20,yO:8+Math.random()*15};
+scene.add(sp);glyphs.push(sp);}})();
+function updateGlyphs(t){const tk=ST.tokens||[];glyphs.forEach((g,i)=>{const u=g.userData,s=u.c.width;
+let txt;if(i<tk.length){const v=tk[i];txt=`${v.name} $${v.price.toFixed(2)}`;}else if(i===tk.length)txt=`BLK ${S.block.number}`;else txt=`W ${S.oscillator.w.toFixed(3)}`;
+u.x.clearRect(0,0,s,s);u.x.font=`${s*.14|0}px 'Courier New',monospace`;u.x.textAlign='center';u.x.textBaseline='middle';
+u.x.fillStyle=`hsla(${(S.oscillator.w*360+i*36)%360},70%,75%,0.7)`;u.x.fillText(txt,s/2,s/2);u.tx.needsUpdate=true;
+const a=t*u.oS+u.oO;g.position.set(Math.cos(a)*u.oR,u.yO+Math.sin(t*u.bS)*u.bA,u.zO+Math.sin(t*.1+u.oO)*6);
+g.material.opacity=.2+S.oscillator.w*.3+drumImpact*.2;});}
 
 // ═════════════════════════════════════════════════════════════════════════════
-// MUSIC ENGINE — Music Theory Based
+// AUDIO ENGINE
 // ═════════════════════════════════════════════════════════════════════════════
-let audioCtx, masterGain, reverbNode, dryGain, wetGain;
-let audioStarted = false;
-let nextBeatTime = 0;
-let beatCount = 0;
+let ax,masterG,dryG,wetG,delayG,delayNode,reverbNode;
+let audioStarted=false,nextBT=0,beatN=0;
 
-// ── Performance state ──
-let perfBPM = 110;
-let perfSwing = 0.55;
-let perfScale = 'dorian';
-let perfKey = 0; // 0=C
-let perfDrumsOn = true, perfBassOn = true, perfDroneOn = true;
-let perfDrumVol = 0.6, perfBassVol = 0.55, perfDroneLvl = 0.35;
-let perfBassTone = 0.4, perfReverbMix = 0.5, perfMasterVol = 0.75;
-let perfDrumStyle = 'jazz', perfBassStyle = 'walk';
+// State
+const P={bpm:110,swing:.55,scale:'dorian',key:0,drumsOn:true,bassOn:true,droneOn:true,
+drumVol:.6,bassVol:.55,droneLvl:.35,bassTone:.4,reverbMix:.5,delayMix:.2,masterVol:.75,
+drumStyle:'jazz',bassStyle:'walk',bassOct:1,kickVol:.8,snrVol:.65,hatVol:.5};
 
-// ── Scale definitions (semitone intervals from root) ──
-const SCALES = {
-  major:  [0,2,4,5,7,9,11],
-  dorian: [0,2,3,5,7,9,10],
-  mixo:   [0,2,4,5,7,9,10],
-  minor:  [0,2,3,5,7,8,10],
-  blues:  [0,3,5,6,7,10],
-  penta:  [0,2,4,7,9],
-  tizita: [0,1,4,5,7,8,11],  // Ethiopian Tizita minor
-  thai:   [0,2,5,7,10],       // Thai pentatonic approximation
-};
+const SCALES={major:[0,2,4,5,7,9,11],dorian:[0,2,3,5,7,9,10],mixo:[0,2,4,5,7,9,10],minor:[0,2,3,5,7,8,10],blues:[0,3,5,6,7,10],penta:[0,2,4,7,9],tizita:[0,1,4,5,7,8,11],thai:[0,2,5,7,10]};
+function m2f(m){return 440*Math.pow(2,(m-69)/12)}
+function scNote(deg,oct){const sc=SCALES[P.scale],i=((deg%sc.length)+sc.length)%sc.length;return P.key+sc[i]+(oct+Math.floor(deg/sc.length))*12;}
+function noiseBuf(dur){const l=ax.sampleRate*dur|0,b=ax.createBuffer(1,l,ax.sampleRate),d=b.getChannelData(0);for(let i=0;i<l;i++)d[i]=Math.random()*2-1;return b;}
 
-function midiToFreq(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
+// Reverb IR
+function mkReverb(){const l=ax.sampleRate*1.5|0,b=ax.createBuffer(2,l,ax.sampleRate);for(let ch=0;ch<2;ch++){const d=b.getChannelData(ch);for(let i=0;i<l;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/l,2.5);}const c=ax.createConvolver();c.buffer=b;return c;}
 
-function getScaleNote(degree, octave) {
-  const scale = SCALES[perfScale];
-  const idx = ((degree % scale.length) + scale.length) % scale.length;
-  const octShift = Math.floor(degree / scale.length);
-  return perfKey + scale[idx] + (octave + octShift) * 12;
-}
+// ── Drums ──
+const DPAT={
+jazz:{len:16,hits:[[0,'ride',.7],[2,'ride',.5],[3,'ride',.35],[4,'ride',.7],[6,'ride',.5],[7,'ride',.3],[8,'ride',.7],[10,'ride',.5],[11,'ride',.35],[12,'ride',.7],[14,'ride',.5],[15,'ride',.3],[4,'hh_f',.3],[12,'hh_f',.3],[0,'kick',.8],[10,'kick',.5],[4,'snare',.65],[7,'snare_g',.2],[12,'snare',.6],[15,'snare_g',.2]]},
+thai:{len:16,hits:[[0,'klong',1],[0,'ching_o',.5],[2,'ching_c',.4],[4,'klong',.7],[4,'ching_o',.5],[6,'ching_c',.4],[7,'ranat',.45],[8,'klong',.9],[8,'ching_o',.5],[10,'ching_c',.4],[11,'ranat',.4],[12,'klong',.8],[12,'ching_o',.5],[14,'ching_c',.45],[15,'ranat',.4]]},
+ethio:{len:12,hits:[[0,'kebero_l',1],[0,'shaker',.3],[2,'shaker',.3],[3,'kebero_h',.55],[4,'shaker',.35],[5,'kebero_h',.45],[6,'kebero_l',.85],[6,'washint',.35],[8,'shaker',.3],[9,'kebero_h',.6],[10,'shaker',.35],[11,'kebero_h',.4]]}};
 
-// ── Reverb (convolution-style via feedback delay) ──
-function buildReverb(ctx) {
-  const len = ctx.sampleRate * 1.5;
-  const buf = ctx.createBuffer(2, len, ctx.sampleRate);
-  for (let ch = 0; ch < 2; ch++) {
-    const d = buf.getChannelData(ch);
-    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.5);
-  }
-  const conv = ctx.createConvolver();
-  conv.buffer = buf;
-  return conv;
-}
+function synthD(time,type,vel){
+  const dst=dryG;
+  // Volume multiplier per instrument category
+  let catMul=1;
+  if(type==='kick'||type==='klong'||type==='kebero_l')catMul=P.kickVol;
+  else if(type==='snare'||type==='snare_g')catMul=P.snrVol;
+  else if(type==='ride'||type==='hh_f'||type==='ching_o'||type==='ching_c'||type==='shaker')catMul=P.hatVol;
+  const v=vel*P.drumVol*catMul*.35;
+  if(v<.001)return;
+  switch(type){
+  case 'ride':{const o=ax.createOscillator(),g=ax.createGain();o.type='triangle';o.frequency.value=800+Math.random()*100;g.gain.setValueAtTime(v*.18,time);g.gain.exponentialRampToValueAtTime(.001,time+.5);const f=ax.createBiquadFilter();f.type='bandpass';f.frequency.value=3000;f.Q.value=4;o.connect(f).connect(g).connect(dst);o.start(time);o.stop(time+.55);break;}
+  case 'hh_f':{const n=ax.createBufferSource();n.buffer=noiseBuf(.04);const g=ax.createGain(),f=ax.createBiquadFilter();f.type='highpass';f.frequency.value=8000;g.gain.setValueAtTime(v*.12,time);g.gain.exponentialRampToValueAtTime(.001,time+.05);n.connect(f).connect(g).connect(dst);n.start(time);n.stop(time+.06);break;}
+  case 'kick':{const o=ax.createOscillator(),g=ax.createGain();o.type='sine';o.frequency.setValueAtTime(90,time);o.frequency.exponentialRampToValueAtTime(40,time+.2);g.gain.setValueAtTime(v,time);g.gain.exponentialRampToValueAtTime(.001,time+.35);o.connect(g).connect(dst);o.start(time);o.stop(time+.4);const n=ax.createBufferSource();n.buffer=noiseBuf(.03);const ng=ax.createGain(),nf=ax.createBiquadFilter();nf.type='lowpass';nf.frequency.value=300;ng.gain.setValueAtTime(v*.3,time);ng.gain.exponentialRampToValueAtTime(.001,time+.04);n.connect(nf).connect(ng).connect(dst);n.start(time);n.stop(time+.05);tImpact(time,vel);break;}
+  case 'snare':{const o=ax.createOscillator(),g=ax.createGain();o.type='triangle';o.frequency.setValueAtTime(200,time);o.frequency.exponentialRampToValueAtTime(120,time+.08);g.gain.setValueAtTime(v*.5,time);g.gain.exponentialRampToValueAtTime(.001,time+.15);o.connect(g).connect(dst);o.start(time);o.stop(time+.2);const n=ax.createBufferSource();n.buffer=noiseBuf(.1);const ng=ax.createGain(),nf=ax.createBiquadFilter();nf.type='highpass';nf.frequency.value=2000;ng.gain.setValueAtTime(v*.35,time);ng.gain.exponentialRampToValueAtTime(.001,time+.12);n.connect(nf).connect(ng).connect(dst);n.start(time);n.stop(time+.15);tImpact(time,vel*.5);break;}
+  case 'snare_g':{const n=ax.createBufferSource();n.buffer=noiseBuf(.04);const g=ax.createGain(),f=ax.createBiquadFilter();f.type='highpass';f.frequency.value=3000;g.gain.setValueAtTime(v*.12,time);g.gain.exponentialRampToValueAtTime(.001,time+.05);n.connect(f).connect(g).connect(dst);n.start(time);n.stop(time+.06);break;}
+  case 'klong':{const o=ax.createOscillator(),g=ax.createGain();o.type='sine';o.frequency.setValueAtTime(90,time);o.frequency.exponentialRampToValueAtTime(38,time+.3);g.gain.setValueAtTime(v,time);g.gain.exponentialRampToValueAtTime(.001,time+.45);o.connect(g).connect(dst);o.start(time);o.stop(time+.5);tImpact(time,vel);break;}
+  case 'ching_o':{const o=ax.createOscillator(),g=ax.createGain();o.type='square';o.frequency.value=1800;g.gain.setValueAtTime(v*.12,time);g.gain.exponentialRampToValueAtTime(.001,time+.35);const f=ax.createBiquadFilter();f.type='bandpass';f.frequency.value=2200;f.Q.value=12;o.connect(f).connect(g).connect(dst);o.start(time);o.stop(time+.4);break;}
+  case 'ching_c':{const o=ax.createOscillator(),g=ax.createGain();o.type='square';o.frequency.value=1600;g.gain.setValueAtTime(v*.1,time);g.gain.exponentialRampToValueAtTime(.001,time+.04);const f=ax.createBiquadFilter();f.type='bandpass';f.frequency.value=2000;f.Q.value=10;o.connect(f).connect(g).connect(dst);o.start(time);o.stop(time+.06);break;}
+  case 'ranat':{const sc=SCALES[P.scale],deg=Math.floor(S.oscillator.w*sc.length),freq=m2f(scNote(deg,5));const o=ax.createOscillator(),g=ax.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(v*.15,time);g.gain.exponentialRampToValueAtTime(.001,time+.2);o.connect(g).connect(dst);o.start(time);o.stop(time+.25);break;}
+  case 'kebero_l':{const o=ax.createOscillator(),g=ax.createGain();o.type='sine';o.frequency.setValueAtTime(78,time);o.frequency.exponentialRampToValueAtTime(33,time+.35);g.gain.setValueAtTime(v*1.1,time);g.gain.exponentialRampToValueAtTime(.001,time+.5);o.connect(g).connect(dst);o.start(time);o.stop(time+.55);tImpact(time,vel);break;}
+  case 'kebero_h':{const o=ax.createOscillator(),g=ax.createGain();o.type='triangle';o.frequency.setValueAtTime(190,time);o.frequency.exponentialRampToValueAtTime(90,time+.1);g.gain.setValueAtTime(v*.3,time);g.gain.exponentialRampToValueAtTime(.001,time+.15);o.connect(g).connect(dst);o.start(time);o.stop(time+.18);break;}
+  case 'shaker':{const n=ax.createBufferSource();n.buffer=noiseBuf(.05);const g=ax.createGain(),f=ax.createBiquadFilter();f.type='highpass';f.frequency.value=5000;g.gain.setValueAtTime(v*.1,time);g.gain.exponentialRampToValueAtTime(.001,time+.06);n.connect(f).connect(g).connect(dst);n.start(time);n.stop(time+.07);break;}
+  case 'washint':{const sc=SCALES.tizita,deg=Math.floor(S.phase*sc.length),freq=m2f(P.key+sc[deg%sc.length]+72);const o=ax.createOscillator(),g=ax.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(0,time);g.gain.linearRampToValueAtTime(v*.1,time+.03);g.gain.exponentialRampToValueAtTime(.001,time+.3);o.connect(g).connect(dst);o.start(time);o.stop(time+.35);break;}
+}}
 
-function createNoiseBuf(ctx, dur) {
-  const len=Math.floor(ctx.sampleRate*dur),buf=ctx.createBuffer(1,len,ctx.sampleRate),d=buf.getChannelData(0);
-  for(let i=0;i<len;i++)d[i]=Math.random()*2-1;return buf;
-}
+function tImpact(time,vel){const d=Math.max(0,(time-ax.currentTime)*1000);setTimeout(()=>{drumImpact=Math.max(drumImpact,vel)},d);}
 
-// ═══ JAZZ DRUM PATTERNS ═════════════════════════════════════════════════════
-// Notation: 16th-note grid per bar (16 slots)
-// Jazz ride: ding-ding-da-ding on quarters with triplet feel
-// Ghost notes on snare, kick accents on 1 and 3
+// ── Bass ──
+let bassIdx=0;
+function synthBass(time,midi,dur){if(!P.bassOn)return;const freq=m2f(midi),v=P.bassVol*.3;
+const o1=ax.createOscillator(),g1=ax.createGain();o1.type='sine';o1.frequency.value=freq;
+g1.gain.setValueAtTime(v,time);g1.gain.setValueAtTime(v*.8,time+dur*.6);g1.gain.exponentialRampToValueAtTime(.001,time+dur*.95);
+const f=ax.createBiquadFilter();f.type='lowpass';f.frequency.value=400+P.bassTone*600;
+o1.connect(f).connect(g1).connect(dryG);o1.start(time);o1.stop(time+dur);
+const o2=ax.createOscillator(),g2=ax.createGain();o2.type='triangle';o2.frequency.value=freq;
+g2.gain.setValueAtTime(v*.3,time);g2.gain.exponentialRampToValueAtTime(.001,time+dur*.7);
+o2.connect(g2).connect(dryG);o2.start(time);o2.stop(time+dur);}
 
-const DRUM_PATTERNS = {
-  jazz: {
-    len: 16,
-    hits: [
-      // Ride cymbal — jazz pattern
-      [0,'ride',0.7],[2,'ride',0.5],[3,'ride',0.35],[4,'ride',0.7],
-      [6,'ride',0.5],[7,'ride',0.3],[8,'ride',0.7],[10,'ride',0.5],
-      [11,'ride',0.35],[12,'ride',0.7],[14,'ride',0.5],[15,'ride',0.3],
-      // Hi-hat foot
-      [4,'hh_f',0.3],[12,'hh_f',0.3],
-      // Kick
-      [0,'kick',0.8],[10,'kick',0.5],
-      // Snare — ghost notes + backbeat
-      [4,'snare',0.65],[7,'snare_g',0.2],[12,'snare',0.6],[15,'snare_g',0.2],
-    ]
-  },
-  thai: {
-    len: 16,
-    hits: [
-      [0,'klong',1.0],[0,'ching_o',0.5],[2,'ching_c',0.4],[4,'klong',0.7],[4,'ching_o',0.5],
-      [6,'ching_c',0.4],[7,'ranat',0.45],[8,'klong',0.9],[8,'ching_o',0.5],[10,'ching_c',0.4],
-      [11,'ranat',0.4],[12,'klong',0.8],[12,'ching_o',0.5],[14,'ching_c',0.45],[15,'ranat',0.4],
-    ]
-  },
-  ethio: {
-    len: 12, // 6/8 feel
-    hits: [
-      [0,'kebero_l',1.0],[0,'shaker',0.3],[2,'shaker',0.3],[3,'kebero_h',0.55],
-      [4,'shaker',0.35],[5,'kebero_h',0.45],[6,'kebero_l',0.85],[6,'washint',0.35],
-      [8,'shaker',0.3],[9,'kebero_h',0.6],[10,'shaker',0.35],[11,'kebero_h',0.4],
-    ]
-  }
-};
+function getBassNote(beat){
+  const sc=SCALES[P.scale],baseOct=24+P.bassOct*12;
+  if(P.bassStyle==='root')return P.key+sc[0]+baseOct;
+  if(P.bassStyle==='octave')return P.key+sc[0]+(beat%2===0?baseOct:baseOct+12);
+  if(P.bassStyle==='fifths'){const deg=beat%2===0?0:(sc.indexOf(7)>=0?sc.indexOf(7):3);return P.key+sc[deg%sc.length]+baseOct;}
+  // Walking
+  const deg=bassIdx%sc.length;let note=P.key+sc[deg]+baseOct;bassIdx++;
+  if(Math.random()<.2){const nd=(deg+1)%sc.length;note=P.key+sc[nd]+baseOct-1;}
+  return note;}
 
-function synthDrum(ctx, time, type, vel) {
-  const v = vel * perfDrumVol * 0.35;
-  const dest = dryGain;
+// ── Organ ──
+const orgNotes=new Map();
+function playOrg(midi){if(!ax||!audioStarted||orgNotes.has(midi))return;
+const freq=m2f(midi),v=.06;
+const harms=[.5,1,2,3,4],gains=[.6,1,.7,.3,.2],oscs=[];
+const ng=ax.createGain();ng.gain.setValueAtTime(0,ax.currentTime);ng.gain.linearRampToValueAtTime(v,ax.currentTime+.015);
+const lfo=ax.createOscillator();lfo.type='sine';lfo.frequency.value=5.5;const lfog=ax.createGain();lfog.gain.value=3;lfo.connect(lfog);lfo.start();
+for(let i=0;i<harms.length;i++){const o=ax.createOscillator();o.type='sine';o.frequency.value=freq*harms[i];lfog.connect(o.frequency);const g=ax.createGain();g.gain.value=gains[i];o.connect(g).connect(ng);o.start();oscs.push(o);}
+ng.connect(dryG);orgNotes.set(midi,{oscs,g:ng,lfo});}
+function stopOrg(midi){if(!orgNotes.has(midi))return;const n=orgNotes.get(midi),now=ax.currentTime;
+n.g.gain.cancelScheduledValues(now);n.g.gain.setValueAtTime(n.g.gain.value,now);n.g.gain.exponentialRampToValueAtTime(.001,now+.12);
+setTimeout(()=>{n.oscs.forEach(o=>o.stop());n.lfo.stop()},150);orgNotes.delete(midi);}
 
-  switch(type) {
-    case 'ride': {
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.type='triangle';o.frequency.value=800+Math.random()*100;
-      g.gain.setValueAtTime(v*0.18,time);g.gain.exponentialRampToValueAtTime(0.001,time+0.5);
-      const f=ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=3000;f.Q.value=4;
-      o.connect(f).connect(g).connect(dest);o.start(time);o.stop(time+0.55);
-      // Ping
-      const o2=ctx.createOscillator(),g2=ctx.createGain();
-      o2.type='sine';o2.frequency.value=1200;
-      g2.gain.setValueAtTime(v*0.05,time);g2.gain.exponentialRampToValueAtTime(0.001,time+0.3);
-      o2.connect(g2).connect(dest);o2.start(time);o2.stop(time+0.35);
-      break;
-    }
-    case 'hh_f': {
-      const n=ctx.createBufferSource();n.buffer=createNoiseBuf(ctx,0.04);
-      const g=ctx.createGain(),f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=8000;
-      g.gain.setValueAtTime(v*0.1,time);g.gain.exponentialRampToValueAtTime(0.001,time+0.05);
-      n.connect(f).connect(g).connect(dest);n.start(time);n.stop(time+0.06);
-      break;
-    }
-    case 'kick': {
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.type='sine';o.frequency.setValueAtTime(90,time);o.frequency.exponentialRampToValueAtTime(40,time+0.2);
-      g.gain.setValueAtTime(v,time);g.gain.exponentialRampToValueAtTime(0.001,time+0.35);
-      o.connect(g).connect(dest);o.start(time);o.stop(time+0.4);
-      const n=ctx.createBufferSource();n.buffer=createNoiseBuf(ctx,0.03);
-      const ng=ctx.createGain(),nf=ctx.createBiquadFilter();nf.type='lowpass';nf.frequency.value=300;
-      ng.gain.setValueAtTime(v*0.3,time);ng.gain.exponentialRampToValueAtTime(0.001,time+0.04);
-      n.connect(nf).connect(ng).connect(dest);n.start(time);n.stop(time+0.05);
-      triggerImpact(time,vel);
-      break;
-    }
-    case 'snare': {
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.type='triangle';o.frequency.setValueAtTime(200,time);o.frequency.exponentialRampToValueAtTime(120,time+0.08);
-      g.gain.setValueAtTime(v*0.5,time);g.gain.exponentialRampToValueAtTime(0.001,time+0.15);
-      o.connect(g).connect(dest);o.start(time);o.stop(time+0.2);
-      const n=ctx.createBufferSource();n.buffer=createNoiseBuf(ctx,0.1);
-      const ng=ctx.createGain(),nf=ctx.createBiquadFilter();nf.type='highpass';nf.frequency.value=2000;
-      ng.gain.setValueAtTime(v*0.35,time);ng.gain.exponentialRampToValueAtTime(0.001,time+0.12);
-      n.connect(nf).connect(ng).connect(dest);n.start(time);n.stop(time+0.15);
-      triggerImpact(time,vel*0.5);
-      break;
-    }
-    case 'snare_g': {
-      const n=ctx.createBufferSource();n.buffer=createNoiseBuf(ctx,0.04);
-      const g=ctx.createGain(),f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=3000;
-      g.gain.setValueAtTime(v*0.1,time);g.gain.exponentialRampToValueAtTime(0.001,time+0.05);
-      n.connect(f).connect(g).connect(dest);n.start(time);n.stop(time+0.06);
-      break;
-    }
-    // Thai drums
-    case 'klong': {
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.type='sine';o.frequency.setValueAtTime(90,time);o.frequency.exponentialRampToValueAtTime(38,time+0.3);
-      g.gain.setValueAtTime(v,time);g.gain.exponentialRampToValueAtTime(0.001,time+0.45);
-      o.connect(g).connect(dest);o.start(time);o.stop(time+0.5);
-      triggerImpact(time,vel);break;
-    }
-    case 'ching_o': {
-      const o=ctx.createOscillator(),g=ctx.createGain();o.type='square';o.frequency.value=1800;
-      g.gain.setValueAtTime(v*0.12,time);g.gain.exponentialRampToValueAtTime(0.001,time+0.35);
-      const f=ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=2200;f.Q.value=12;
-      o.connect(f).connect(g).connect(dest);o.start(time);o.stop(time+0.4);break;
-    }
-    case 'ching_c': {
-      const o=ctx.createOscillator(),g=ctx.createGain();o.type='square';o.frequency.value=1600;
-      g.gain.setValueAtTime(v*0.1,time);g.gain.exponentialRampToValueAtTime(0.001,time+0.04);
-      const f=ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=2000;f.Q.value=10;
-      o.connect(f).connect(g).connect(dest);o.start(time);o.stop(time+0.06);break;
-    }
-    case 'ranat': {
-      const sc=SCALES[perfScale],deg=Math.floor(S.oscillator.w*sc.length);
-      const freq=midiToFreq(getScaleNote(deg,5));
-      const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=freq;
-      g.gain.setValueAtTime(v*0.15,time);g.gain.exponentialRampToValueAtTime(0.001,time+0.2);
-      o.connect(g).connect(dest);o.start(time);o.stop(time+0.25);break;
-    }
-    // Ethiopian drums
-    case 'kebero_l': {
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.type='sine';o.frequency.setValueAtTime(78,time);o.frequency.exponentialRampToValueAtTime(33,time+0.35);
-      g.gain.setValueAtTime(v*1.1,time);g.gain.exponentialRampToValueAtTime(0.001,time+0.5);
-      o.connect(g).connect(dest);o.start(time);o.stop(time+0.55);
-      triggerImpact(time,vel);break;
-    }
-    case 'kebero_h': {
-      const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';
-      o.frequency.setValueAtTime(190,time);o.frequency.exponentialRampToValueAtTime(90,time+0.1);
-      g.gain.setValueAtTime(v*0.3,time);g.gain.exponentialRampToValueAtTime(0.001,time+0.15);
-      o.connect(g).connect(dest);o.start(time);o.stop(time+0.18);break;
-    }
-    case 'shaker': {
-      const n=ctx.createBufferSource();n.buffer=createNoiseBuf(ctx,0.05);
-      const g=ctx.createGain(),f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=5000;
-      g.gain.setValueAtTime(v*0.1,time);g.gain.exponentialRampToValueAtTime(0.001,time+0.06);
-      n.connect(f).connect(g).connect(dest);n.start(time);n.stop(time+0.07);break;
-    }
-    case 'washint': {
-      const sc=SCALES.tizita,deg=Math.floor(S.phase*sc.length);
-      const freq=midiToFreq(perfKey+sc[deg%sc.length]+72);
-      const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=freq;
-      g.gain.setValueAtTime(0,time);g.gain.linearRampToValueAtTime(v*0.1,time+0.03);
-      g.gain.exponentialRampToValueAtTime(0.001,time+0.3);
-      o.connect(g).connect(dest);o.start(time);o.stop(time+0.35);break;
-    }
-  }
-}
+// ── Keyboard ──
+// Standard piano layout: Z=C, X=D, C=E, V=F, B=G, N=A, M=B, ,=C+1, .=D+1, /=E+1
+// Black: S=Db, D=Eb, G=Gb, H=Ab, J=Bb, L=Db+1, ;=Eb+1
+const WHITE_KEYS='zxcvbnm,./' .split('');
+const BLACK_MAP={s:1,d:3,g:6,h:8,j:10,l:13,';':15};
+// Chromatic semitones for white keys: C D E F G A B C D E
+const WHITE_SEMI=[0,2,4,5,7,9,11,12,14,16];
 
-// ═══ WALKING BASS ════════════════════════════════════════════════════════════
-let bassNoteIdx = 0;
-
-function synthBass(ctx, time, midiNote, dur) {
-  if (!perfBassOn) return;
-  const freq = midiToFreq(midiNote);
-  const v = perfBassVol * 0.3;
-
-  // Upright bass: sine + triangle with filter
-  const o1 = ctx.createOscillator(), g1 = ctx.createGain();
-  o1.type = 'sine'; o1.frequency.value = freq;
-  g1.gain.setValueAtTime(v, time);
-  g1.gain.setValueAtTime(v * 0.8, time + dur * 0.6);
-  g1.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.95);
-  const f = ctx.createBiquadFilter();
-  f.type = 'lowpass'; f.frequency.value = 400 + perfBassTone * 600;
-  o1.connect(f).connect(g1).connect(dryGain);
-  o1.start(time); o1.stop(time + dur);
-
-  // Harmonic body
-  const o2 = ctx.createOscillator(), g2 = ctx.createGain();
-  o2.type = 'triangle'; o2.frequency.value = freq;
-  g2.gain.setValueAtTime(v * 0.3, time);
-  g2.gain.exponentialRampToValueAtTime(0.001, time + dur * 0.7);
-  o2.connect(f).connect(g2).connect(dryGain);
-  o2.start(time); o2.stop(time + dur);
-
-  // Pluck transient
-  const n = ctx.createBufferSource(); n.buffer = createNoiseBuf(ctx, 0.02);
-  const ng = ctx.createGain();
-  ng.gain.setValueAtTime(v * 0.2, time);
-  ng.gain.exponentialRampToValueAtTime(0.001, time + 0.03);
-  n.connect(ng).connect(dryGain);
-  n.start(time); n.stop(time + 0.04);
-}
-
-function getWalkingBassNote(beat) {
-  const sc = SCALES[perfScale];
-  if (perfBassStyle === 'root') {
-    return perfKey + sc[0] + 36; // Root, octave 2
-  } else if (perfBassStyle === 'octave') {
-    return perfKey + sc[0] + (beat % 2 === 0 ? 36 : 48);
-  }
-  // Walking: move through scale degrees with chromatic approaches
-  const deg = bassNoteIdx % sc.length;
-  let note = perfKey + sc[deg] + 36;
-  bassNoteIdx++;
-  // Occasional chromatic approach (approach next note from half-step below)
-  if (Math.random() < 0.2) {
-    const nextDeg = (deg + 1) % sc.length;
-    const nextNote = perfKey + sc[nextDeg] + 36;
-    note = nextNote - 1; // chromatic approach
-  }
-  return note;
-}
-
-// ═══ ORGAN (drawbar synthesis) ════════════════════════════════════════════════
-const activeOrganNotes = new Map();
-const organGain = { node: null };
-
-function playOrganNote(midiNote) {
-  if (!audioCtx || !audioStarted) return;
-  if (activeOrganNotes.has(midiNote)) return;
-  const freq = midiToFreq(midiNote);
-  const v = 0.06;
-
-  // Drawbar organ: harmonics at 16', 8', 4', 2-2/3', 2'
-  const harmonics = [0.5, 1, 2, 3, 4];
-  const gains     = [0.6, 1.0, 0.7, 0.3, 0.2];
-  const oscs = [];
-  const noteGain = audioCtx.createGain();
-  noteGain.gain.setValueAtTime(0, audioCtx.currentTime);
-  noteGain.gain.linearRampToValueAtTime(v, audioCtx.currentTime + 0.02);
-
-  // Leslie speaker effect (slow vibrato)
-  const lfo = audioCtx.createOscillator();
-  lfo.type = 'sine'; lfo.frequency.value = 5.5;
-  const lfoGain = audioCtx.createGain();
-  lfoGain.gain.value = 3;
-  lfo.connect(lfoGain);
-  lfo.start();
-
-  for (let i = 0; i < harmonics.length; i++) {
-    const o = audioCtx.createOscillator();
-    o.type = 'sine';
-    o.frequency.value = freq * harmonics[i];
-    lfoGain.connect(o.frequency);
-    const g = audioCtx.createGain();
-    g.gain.value = gains[i];
-    o.connect(g).connect(noteGain);
-    o.start();
-    oscs.push(o);
-  }
-
-  noteGain.connect(dryGain);
-  activeOrganNotes.set(midiNote, { oscs, gain: noteGain, lfo });
-}
-
-function stopOrganNote(midiNote) {
-  if (!activeOrganNotes.has(midiNote)) return;
-  const n = activeOrganNotes.get(midiNote);
-  const now = audioCtx.currentTime;
-  n.gain.gain.cancelScheduledValues(now);
-  n.gain.gain.setValueAtTime(n.gain.gain.value, now);
-  n.gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-  setTimeout(() => { n.oscs.forEach(o => o.stop()); n.lfo.stop(); }, 200);
-  activeOrganNotes.delete(midiNote);
-}
-
-// ═══ KEYBOARD UI ═════════════════════════════════════════════════════════════
-const KEY_MAP = { // computer keyboard → scale degree
-  'a':0,'w':0.5,'s':1,'e':1.5,'d':2,'f':3,'t':3.5,'g':4,'y':4.5,'h':5,'u':5.5,'j':6,'k':7,
-};
-
-function buildKeyboard() {
-  const kb = document.getElementById('keyboard');
-  kb.innerHTML = '';
-  const sc = SCALES[perfScale];
-  // Build one octave of white + black keys based on chromatic layout
-  const chromatic = [
-    {note:'C',black:false},{note:'Db',black:true},{note:'D',black:false},
-    {note:'Eb',black:true},{note:'E',black:false},{note:'F',black:false},
-    {note:'Gb',black:true},{note:'G',black:false},{note:'Ab',black:true},
-    {note:'A',black:false},{note:'Bb',black:true},{note:'B',black:false},
+function buildKB(){
+  const kb=document.getElementById('keyboard');kb.innerHTML='';
+  // 13 chromatic notes: C Db D Eb E F Gb G Ab A Bb B C
+  const layout=[
+    {w:true,s:0,k:'Z'},{w:false,s:1,k:'S'},{w:true,s:2,k:'X'},{w:false,s:3,k:'D'},{w:true,s:4,k:'C'},
+    {w:true,s:5,k:'V'},{w:false,s:6,k:'G'},{w:true,s:7,k:'B'},{w:false,s:8,k:'H'},{w:true,s:9,k:'N'},
+    {w:false,s:10,k:'J'},{w:true,s:11,k:'M'},{w:true,s:12,k:','},{w:false,s:13,k:'L'},{w:true,s:14,k:'.'},
+    {w:false,s:15,k:';'},{w:true,s:16,k:'/'}
   ];
-  // Plus one more C
-  const fullChrom = [...chromatic, {note:'C',black:false}];
-  const compKeys = 'asdfghjkl;\'';
-  let wIdx = 0;
-  fullChrom.forEach((k, i) => {
-    const el = document.createElement('div');
-    el.className = 'key ' + (k.black ? 'black' : 'white');
-    const midi = perfKey + 60 + i; // Middle C octave
-    el.dataset.midi = midi;
-    if (!k.black) {
-      el.textContent = compKeys[wIdx] || '';
-      wIdx++;
-    }
-    el.addEventListener('mousedown', e => { e.preventDefault(); playOrganNote(midi); el.classList.add('active'); });
-    el.addEventListener('mouseup', () => { stopOrganNote(midi); el.classList.remove('active'); });
-    el.addEventListener('mouseleave', () => { stopOrganNote(midi); el.classList.remove('active'); });
-    el.addEventListener('touchstart', e => { e.preventDefault(); playOrganNote(midi); el.classList.add('active'); });
-    el.addEventListener('touchend', () => { stopOrganNote(midi); el.classList.remove('active'); });
+  layout.forEach(n=>{
+    const el=document.createElement('div');
+    const midi=P.key+60+n.s;
+    el.className='key '+(n.w?'white':'black');
+    el.dataset.midi=midi;el.dataset.semi=n.s;
+    el.textContent=n.k;
+    el.addEventListener('mousedown',e=>{e.preventDefault();playOrg(midi);el.classList.add('active')});
+    el.addEventListener('mouseup',()=>{stopOrg(midi);el.classList.remove('active')});
+    el.addEventListener('mouseleave',()=>{stopOrg(midi);el.classList.remove('active')});
+    el.addEventListener('touchstart',e=>{e.preventDefault();playOrg(midi);el.classList.add('active')},{passive:false});
+    el.addEventListener('touchend',()=>{stopOrg(midi);el.classList.remove('active')});
     kb.appendChild(el);
   });
 }
 
-// Computer keyboard input
-const heldKeys = new Set();
-document.addEventListener('keydown', e => {
-  if (e.repeat || !audioStarted) return;
-  const deg = KEY_MAP[e.key.toLowerCase()];
-  if (deg === undefined) return;
-  e.preventDefault();
-  // Map to midi
-  const semi = Math.floor(deg);
-  const isSharp = deg % 1 !== 0;
-  const midi = perfKey + 60 + semi + (isSharp ? 1 : 0);
-  if (!heldKeys.has(e.key.toLowerCase())) {
-    heldKeys.add(e.key.toLowerCase());
-    playOrganNote(midi);
-    const el = document.querySelector(`.key[data-midi="${midi}"]`);
-    if (el) el.classList.add('active');
-  }
+// PC Keyboard mapping
+const held=new Set();
+function keyToMidi(key){
+  const k=key.toLowerCase();
+  const wi=WHITE_KEYS.indexOf(k);
+  if(wi>=0)return P.key+60+WHITE_SEMI[wi];
+  if(BLACK_MAP[k]!==undefined)return P.key+60+BLACK_MAP[k];
+  return null;
+}
+document.addEventListener('keydown',e=>{
+  if(e.repeat||!audioStarted||e.target.tagName==='SELECT'||e.target.tagName==='INPUT')return;
+  const midi=keyToMidi(e.key);if(midi===null)return;e.preventDefault();
+  if(!held.has(e.key.toLowerCase())){held.add(e.key.toLowerCase());playOrg(midi);
+  const el=document.querySelector(`.key[data-midi="${midi}"]`);if(el)el.classList.add('active');}
 });
-document.addEventListener('keyup', e => {
-  const deg = KEY_MAP[e.key.toLowerCase()];
-  if (deg === undefined) return;
-  const semi = Math.floor(deg);
-  const isSharp = deg % 1 !== 0;
-  const midi = perfKey + 60 + semi + (isSharp ? 1 : 0);
-  heldKeys.delete(e.key.toLowerCase());
-  stopOrganNote(midi);
-  const el = document.querySelector(`.key[data-midi="${midi}"]`);
-  if (el) el.classList.remove('active');
+document.addEventListener('keyup',e=>{
+  const midi=keyToMidi(e.key);if(midi===null)return;
+  held.delete(e.key.toLowerCase());stopOrg(midi);
+  const el=document.querySelector(`.key[data-midi="${midi}"]`);if(el)el.classList.remove('active');
 });
 
-// ═══ SCHEDULER ═══════════════════════════════════════════════════════════════
-function scheduleLoop() {
-  if (!audioCtx) return;
-  const pat = DRUM_PATTERNS[perfDrumStyle];
-  const patLen = pat.len;
-  const sixteenth = (60.0 / perfBPM) / 4;
-  const quarter = sixteenth * 4;
-
-  while (nextBeatTime < audioCtx.currentTime + 0.25) {
-    // Drums
-    if (perfDrumsOn) {
-      for (const [offset, type, vel] of pat.hits) {
-        let t = nextBeatTime + offset * sixteenth;
-        // Swing on odd 16ths
-        if (offset % 2 === 1) t += sixteenth * perfSwing * 0.45;
-        t += (Math.random() - 0.5) * 0.006; // humanize
-        synthDrum(audioCtx, t, type, vel);
-      }
-    }
-
-    // Bass — one note per quarter
-    if (perfBassOn) {
-      for (let q = 0; q < patLen / 4; q++) {
-        const bTime = nextBeatTime + q * quarter;
-        const note = getWalkingBassNote(beatCount + q);
-        synthBass(audioCtx, bTime, note, quarter * 0.9);
-      }
-    }
-
-    beatCount += patLen / 4;
-    nextBeatTime += patLen * sixteenth;
-  }
-  setTimeout(scheduleLoop, 100);
+// ── Microphone / Input ──
+let micStream,micSource,micGainNode,micLoEQ,micHiEQ,micAnalyser,micOn=false;
+async function startMic(){
+  try{
+    micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+    micSource=ax.createMediaStreamSource(micStream);
+    micGainNode=ax.createGain();micGainNode.gain.value=1;
+    micLoEQ=ax.createBiquadFilter();micLoEQ.type='lowshelf';micLoEQ.frequency.value=300;micLoEQ.gain.value=0;
+    micHiEQ=ax.createBiquadFilter();micHiEQ.type='highshelf';micHiEQ.frequency.value=3000;micHiEQ.gain.value=0;
+    micAnalyser=ax.createAnalyser();micAnalyser.fftSize=256;
+    micSource.connect(micGainNode).connect(micLoEQ).connect(micHiEQ).connect(micAnalyser).connect(dryG);
+    micOn=true;document.getElementById('btn-mic').classList.add('on');
+  }catch(e){console.warn('Mic error:',e);}
+}
+function stopMic(){
+  if(micStream){micStream.getTracks().forEach(t=>t.stop());micSource.disconnect();}
+  micOn=false;document.getElementById('btn-mic').classList.remove('on');
+}
+function updateMicMeter(){
+  if(!micOn||!micAnalyser)return;
+  const d=new Uint8Array(micAnalyser.frequencyBinCount);micAnalyser.getByteFrequencyData(d);
+  let sum=0;for(let i=0;i<d.length;i++)sum+=d[i];
+  const avg=sum/d.length/255*100;
+  document.getElementById('mic-meter-fill').style.width=avg+'%';
 }
 
-function triggerImpact(time, vel) {
-  const d = Math.max(0, (time - audioCtx.currentTime) * 1000);
-  setTimeout(() => { drumImpact = Math.max(drumImpact, vel); }, d);
+// ── Recording ──
+let mediaRec,recChunks=[],isRec=false;
+function startRec(){
+  const dest=ax.createMediaStreamDestination();
+  masterG.connect(dest);
+  mediaRec=new MediaRecorder(dest.stream,{mimeType:'audio/webm'});
+  recChunks=[];
+  mediaRec.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data)};
+  mediaRec.onstop=()=>{document.getElementById('btn-dl').style.display='inline-block'};
+  mediaRec.start();isRec=true;
+  document.getElementById('btn-rec').classList.add('on');
+}
+function stopRec(){
+  if(mediaRec&&mediaRec.state==='recording')mediaRec.stop();
+  isRec=false;document.getElementById('btn-rec').classList.remove('on');
+}
+function downloadRec(){
+  if(!recChunks.length)return;
+  const blob=new Blob(recChunks,{type:'audio/webm'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='token-oscillator-'+Date.now()+'.webm';
+  a.click();URL.revokeObjectURL(url);
+}
+
+// ── Scheduler ──
+function scheduleLoop(){
+  if(!ax)return;
+  const pat=DPAT[P.drumStyle],patLen=pat.len,six=(60/P.bpm)/4,qtr=six*4;
+  while(nextBT<ax.currentTime+.25){
+    if(P.drumsOn)for(const[off,type,vel]of pat.hits){let t=nextBT+off*six;if(off%2===1)t+=six*P.swing*.45;t+=(Math.random()-.5)*.006;synthD(t,type,vel);}
+    if(P.bassOn)for(let q=0;q<patLen/4;q++){const bT=nextBT+q*qtr;synthBass(bT,getBassNote(beatN+q),qtr*.9);}
+    beatN+=patLen/4;nextBT+=patLen*six;}
+  setTimeout(scheduleLoop,100);
 }
 
 // Drone
-let droneO1, droneO2, droneGN;
+let droneO1,droneO2,droneGN;
 
-function startAudio() {
-  if (audioStarted) return;
-  audioStarted = true;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  masterGain = audioCtx.createGain();
-  masterGain.gain.value = perfMasterVol;
-  masterGain.connect(audioCtx.destination);
-
-  // Dry/wet routing for reverb
-  dryGain = audioCtx.createGain(); dryGain.gain.value = 1;
-  wetGain = audioCtx.createGain(); wetGain.gain.value = perfReverbMix * 0.5;
-  reverbNode = buildReverb(audioCtx);
-  dryGain.connect(masterGain);
-  dryGain.connect(reverbNode);
-  reverbNode.connect(wetGain);
-  wetGain.connect(masterGain);
-
+function startAudio(){
+  if(audioStarted)return;audioStarted=true;
+  ax=new(window.AudioContext||window.webkitAudioContext)();
+  masterG=ax.createGain();masterG.gain.value=P.masterVol;masterG.connect(ax.destination);
+  dryG=ax.createGain();dryG.gain.value=1;
+  wetG=ax.createGain();wetG.gain.value=P.reverbMix*.5;
+  reverbNode=mkReverb();dryG.connect(masterG);dryG.connect(reverbNode);reverbNode.connect(wetG);wetG.connect(masterG);
+  // Delay
+  delayNode=ax.createDelay(.5);delayNode.delayTime.value=.3;
+  const delayFb=ax.createGain();delayFb.gain.value=.35;
+  delayG=ax.createGain();delayG.gain.value=P.delayMix*.4;
+  dryG.connect(delayNode);delayNode.connect(delayFb);delayFb.connect(delayNode);delayNode.connect(delayG);delayG.connect(masterG);
   // Drone
-  droneGN = audioCtx.createGain(); droneGN.gain.value = perfDroneLvl * 0.06;
-  droneGN.connect(masterGain);
-  droneO1 = audioCtx.createOscillator(); droneO1.type='sine'; droneO1.frequency.value=midiToFreq(perfKey+36);
-  droneO1.connect(droneGN); droneO1.start();
-  droneO2 = audioCtx.createOscillator(); droneO2.type='triangle'; droneO2.frequency.value=midiToFreq(perfKey+43);
-  const dg2=audioCtx.createGain();dg2.gain.value=0.4;
-  droneO2.connect(dg2).connect(droneGN); droneO2.start();
-
-  nextBeatTime = audioCtx.currentTime + 0.1;
-  scheduleLoop();
-  buildKeyboard();
+  droneGN=ax.createGain();droneGN.gain.value=P.droneLvl*.06;droneGN.connect(masterG);
+  droneO1=ax.createOscillator();droneO1.type='sine';droneO1.frequency.value=m2f(P.key+36);droneO1.connect(droneGN);droneO1.start();
+  droneO2=ax.createOscillator();droneO2.type='triangle';droneO2.frequency.value=m2f(P.key+43);const dg=ax.createGain();dg.gain.value=.4;droneO2.connect(dg).connect(droneGN);droneO2.start();
+  nextBT=ax.currentTime+.1;scheduleLoop();buildKB();
   document.getElementById('audio-prompt').classList.add('hidden');
 }
 
-document.addEventListener('click', e => {
-  if (e.target.closest('#perf-panel')) return;
-  startAudio();
-}, {once: true});
+document.addEventListener('click',e=>{if(!e.target.closest('#perf-panel'))startAudio();},{once:true});
 
-// ═══ UI CONTROL FUNCTIONS ════════════════════════════════════════════════════
-function setBPM(v) { perfBPM = v; document.getElementById('bpm-val').textContent = v; }
-function setScale(v) { perfScale = v; buildKeyboard(); }
-function setKey(v) { perfKey = v; buildKeyboard(); if (droneO1) { droneO1.frequency.setTargetAtTime(midiToFreq(v+36),audioCtx.currentTime,0.3); droneO2.frequency.setTargetAtTime(midiToFreq(v+43),audioCtx.currentTime,0.3); }}
-function setMaster(v) { perfMasterVol = v/100; if(masterGain) masterGain.gain.setTargetAtTime(perfMasterVol,audioCtx.currentTime,0.1); }
-function toggleDrums() { perfDrumsOn=!perfDrumsOn; document.getElementById('btn-drums').classList.toggle('on',perfDrumsOn); document.getElementById('btn-drums').textContent=perfDrumsOn?'ON':'OFF'; }
-function toggleBass() { perfBassOn=!perfBassOn; document.getElementById('btn-bass').classList.toggle('on',perfBassOn); document.getElementById('btn-bass').textContent=perfBassOn?'ON':'OFF'; }
-function toggleDrone() { perfDroneOn=!perfDroneOn; document.getElementById('btn-drone').classList.toggle('on',perfDroneOn); document.getElementById('btn-drone').textContent=perfDroneOn?'ON':'OFF'; if(droneGN) droneGN.gain.setTargetAtTime(perfDroneOn?perfDroneLvl*0.06:0,audioCtx.currentTime,0.2); }
-function setSwing(v) { perfSwing = v/100; }
-function setDrumVol(v) { perfDrumVol = v/100; }
-function setBassVol(v) { perfBassVol = v/100; }
-function setBassTone(v) { perfBassTone = v/100; }
-function setDroneLvl(v) { perfDroneLvl=v/100; if(droneGN&&perfDroneOn) droneGN.gain.setTargetAtTime(perfDroneLvl*0.06,audioCtx.currentTime,0.2); }
-function setReverb(v) { perfReverbMix=v/100; if(wetGain) wetGain.gain.setTargetAtTime(perfReverbMix*0.5,audioCtx.currentTime,0.2); }
-function setDrumStyle(s) { perfDrumStyle=s; document.querySelectorAll('[data-ds]').forEach(b=>b.classList.toggle('on',b.dataset.ds===s)); }
-function setBassStyle(s) { perfBassStyle=s; document.querySelectorAll('[data-bs]').forEach(b=>b.classList.toggle('on',b.dataset.bs===s)); }
+// ── Controls ──
+let tapTs=[];
+const C={
+  setBPM(v){P.bpm=v;document.getElementById('bpm-val').textContent=v},
+  tapTempo(){const n=performance.now();tapTs.push(n);tapTs=tapTs.filter(t=>n-t<3000);if(tapTs.length>=3){let s=0;for(let i=1;i<tapTs.length;i++)s+=tapTs[i]-tapTs[i-1];const b=Math.round(60000/(s/(tapTs.length-1)));if(b>=50&&b<=180){P.bpm=b;document.getElementById('sl-bpm').value=b;document.getElementById('bpm-val').textContent=b;}}},
+  setScale(v){P.scale=v;buildKB()},
+  setKey(v){P.key=v;buildKB();if(droneO1){droneO1.frequency.setTargetAtTime(m2f(v+36),ax.currentTime,.3);droneO2.frequency.setTargetAtTime(m2f(v+43),ax.currentTime,.3);}},
+  setMaster(v){P.masterVol=v/100;if(masterG)masterG.gain.setTargetAtTime(P.masterVol,ax.currentTime,.1)},
+  toggleDrums(){P.drumsOn=!P.drumsOn;const b=document.getElementById('btn-drums');b.classList.toggle('on',P.drumsOn);b.textContent=P.drumsOn?'ON':'OFF'},
+  toggleBass(){P.bassOn=!P.bassOn;const b=document.getElementById('btn-bass');b.classList.toggle('on',P.bassOn);b.textContent=P.bassOn?'ON':'OFF'},
+  toggleDrone(){P.droneOn=!P.droneOn;const b=document.getElementById('btn-drone');b.classList.toggle('on',P.droneOn);b.textContent=P.droneOn?'DRONE':'OFF';if(droneGN)droneGN.gain.setTargetAtTime(P.droneOn?P.droneLvl*.06:0,ax.currentTime,.2)},
+  setSwing(v){P.swing=v/100},setDV(v){P.drumVol=v/100},setBV(v){P.bassVol=v/100},setBT(v){P.bassTone=v/100},
+  setDL(v){P.droneLvl=v/100;if(droneGN&&P.droneOn)droneGN.gain.setTargetAtTime(P.droneLvl*.06,ax.currentTime,.2)},
+  setVerb(v){P.reverbMix=v/100;if(wetG)wetG.gain.setTargetAtTime(P.reverbMix*.5,ax.currentTime,.2)},
+  setDelay(v){P.delayMix=v/100;if(delayG)delayG.gain.setTargetAtTime(P.delayMix*.4,ax.currentTime,.2)},
+  setDS(s){P.drumStyle=s;document.querySelectorAll('[data-ds]').forEach(b=>b.classList.toggle('on',b.dataset.ds===s))},
+  setBS(s){P.bassStyle=s;document.querySelectorAll('[data-bs]').forEach(b=>b.classList.toggle('on',b.dataset.bs===s))},
+  setBassOct(v){P.bassOct=v},
+  setKickVol(v){P.kickVol=v/100},setSnrVol(v){P.snrVol=v/100},setHatVol(v){P.hatVol=v/100},
+  toggleMic(){micOn?stopMic():startMic()},
+  setMicGain(v){if(micGainNode)micGainNode.gain.setTargetAtTime(v/100,ax.currentTime,.1)},
+  setMicEQ(band,v){if(band==='lo'&&micLoEQ)micLoEQ.gain.value=v;if(band==='hi'&&micHiEQ)micHiEQ.gain.value=v},
+  toggleRec(){isRec?stopRec():startRec()},
+  downloadRec(){downloadRec()},
+};
+window.C=C;
 
-// Tap tempo
-let tapTimes = [];
-function tapTempo() {
-  const now = performance.now();
-  tapTimes.push(now);
-  tapTimes = tapTimes.filter(t => now - t < 3000);
-  if (tapTimes.length >= 3) {
-    let sum = 0;
-    for (let i = 1; i < tapTimes.length; i++) sum += tapTimes[i] - tapTimes[i-1];
-    const avg = sum / (tapTimes.length - 1);
-    const bpm = Math.round(60000 / avg);
-    if (bpm >= 50 && bpm <= 180) {
-      perfBPM = bpm;
-      document.getElementById('sl-bpm').value = bpm;
-      document.getElementById('bpm-val').textContent = bpm;
-    }
-  }
-}
-
-// Expose to window
-['setBPM','setScale','setKey','setMaster','toggleDrums','toggleBass','toggleDrone',
- 'setSwing','setDrumVol','setBassVol','setBassTone','setDroneLvl','setReverb',
- 'setDrumStyle','setBassStyle','tapTempo'].forEach(fn => window[fn] = eval(fn));
-
-// ── Resize ──
-window.addEventListener('resize', () => {
-  camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth,window.innerHeight);composer.setSize(window.innerWidth,window.innerHeight);
-});
+// Resize
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);});
 
 // ═════════════════════════════════════════════════════════════════════════════
 // ANIMATION LOOP
 // ═════════════════════════════════════════════════════════════════════════════
-const clock = new THREE.Clock();
-function animate() {
-  requestAnimationFrame(animate);
-  const t = clock.getElapsedTime();
-  lerpState();
-  drumImpact *= 0.87; if(drumImpact<0.01)drumImpact=0;
-
-  // Sun
+const clock=new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);const t=clock.getElapsedTime();lerpState();
+  drumImpact*=.87;if(drumImpact<.01)drumImpact=0;
   sunMat.uniforms.uTime.value=t;sunMat.uniforms.uW.value=S.oscillator.w;sunMat.uniforms.uImpact.value=drumImpact;
-  sun.scale.setScalar(1+Math.sin(t*0.5)*0.05+drumImpact*0.3);
-  sunGlow.scale.setScalar(28+drumImpact*15+Math.sin(t*0.8)*3);
-  sunLight.color.setHSL(S.oscillator.w*0.15+0.08,0.9,0.6);
-  sunLight.intensity=2.5+drumImpact*3;
-
-  // Planets
+  sun.scale.setScalar(1+Math.sin(t*.5)*.05+drumImpact*.3);
+  sunGlow.scale.setScalar(28+drumImpact*15+Math.sin(t*.8)*3);
+  if(sunLight){sunLight.color.setHSL(S.oscillator.w*.15+.08,.9,.6);sunLight.intensity=2.5+drumImpact*3;}
   const tk=ST.tokens||[];
-  for(let i=0;i<planets.length;i++){const p=planets[i],to=tk[i]||{delta:0,volume:0};
-  p.angle+=(p.cfg.spd*0.008)*(1+Math.abs(to.delta)*200);
-  p.group.position.set(Math.cos(p.angle)*p.cfg.o, Math.sin(p.angle*2+i)*1.5, Math.sin(p.angle)*p.cfg.o*0.92);
-  p.planet.scale.setScalar(1+(to.volume||0)*0.08+drumImpact*0.15);
-  const pH=(p.cfg.h+S.oscillator.w*0.3)%1;
-  p.planet.material.emissive.setHSL(pH,0.8,0.12+drumImpact*0.15);
-  p.planet.material.color.setHSL(pH,0.7,0.35+drumImpact*0.1);
-  p.planet.rotation.y+=0.005+i*0.001;}
-
-  // Dust
-  dMat.uniforms.uTime.value=t;dMat.uniforms.uW.value=S.oscillator.w;dMat.uniforms.uImpact.value=drumImpact;
-
-  // Dragons
-  updateDragons(t);
-
-  // Bloom
-  bloomPass.strength=1.2+Math.sin(t*S.tempo*Math.PI*2)*0.4+drumImpact*2.5;
-  scene.background.setRGB(0.008+drumImpact*0.02, 0.005+S.oscillator.w*0.008, 0.02+drumImpact*0.01);
-
-  // Camera
-  const cR=70+Math.sin(t*0.04)*15,cY=25+Math.sin(t*0.06)*12,sh=drumImpact*1.0;
-  camera.position.set(Math.cos(t*0.03)*cR+Math.sin(t*30)*sh, cY+Math.cos(t*25)*sh, Math.sin(t*0.03)*cR);
+  planets.forEach((p,i)=>{const to=tk[i]||{delta:0,volume:0};
+  p.angle+=(p.cfg.s*.008)*(1+Math.abs(to.delta)*200);
+  p.group.position.set(Math.cos(p.angle)*p.cfg.o,Math.sin(p.angle*2+i)*1.5,Math.sin(p.angle)*p.cfg.o*.92);
+  p.planet.scale.setScalar(1+(to.volume||0)*.08+drumImpact*.15);
+  const pH=(p.cfg.h+S.oscillator.w*.3)%1;p.planet.material.emissive.setHSL(pH,.8,.12+drumImpact*.15);p.planet.material.color.setHSL(pH,.7,.35+drumImpact*.1);
+  p.planet.rotation.y+=.005+i*.001;});
+  if(window._dustMat){window._dustMat.uniforms.uTime.value=t;window._dustMat.uniforms.uW.value=S.oscillator.w;window._dustMat.uniforms.uImpact.value=drumImpact;}
+  updateCreatures(t);
+  bloomPass.strength=1.2+Math.sin(t*S.tempo*Math.PI*2)*.4+drumImpact*2.5;
+  scene.background.setRGB(.008+drumImpact*.02,.005+S.oscillator.w*.008,.02+drumImpact*.01);
+  const cR=70+Math.sin(t*.04)*15,cY=25+Math.sin(t*.06)*12,sh=drumImpact;
+  camera.position.set(Math.cos(t*.03)*cR+Math.sin(t*30)*sh,cY+Math.cos(t*25)*sh,Math.sin(t*.03)*cR);
   camera.lookAt(0,0,0);
-
-  updateGlyphs(t);
-  if(audioStarted&&droneGN){const bF=midiToFreq(perfKey+36)+S.oscillator.w*10;
-  droneO1.frequency.setTargetAtTime(bF,audioCtx.currentTime,0.5);droneO2.frequency.setTargetAtTime(bF*1.5,audioCtx.currentTime,0.5);}
+  updateGlyphs(t);updateMicMeter();
+  if(audioStarted&&droneGN){const bF=m2f(P.key+36)+S.oscillator.w*10;
+  droneO1.frequency.setTargetAtTime(bF,ax.currentTime,.5);droneO2.frequency.setTargetAtTime(bF*1.5,ax.currentTime,.5);}
   composer.render();
 }
 animate();
