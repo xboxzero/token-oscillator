@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Token Oscillator — WebSocket backend
+Web Instrument for Meditation — WebSocket backend
 Simulates multi-token price streams and computes Lorenz/Fourier/sine oscillator data.
 Broadcasts at ~10Hz via WebSocket on port 8765.
 """
