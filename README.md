@@ -1,131 +1,114 @@
-# Web Instrument for Meditation
+# Clouding Synthesizer
 
-Real-time audiovisual meditation instrument on Raspberry Pi 5. Streams simulated multi-token data through Lorenz/Fourier/sine oscillators and renders a 3D circle-of-life scene with procedural animals orbiting a glowing core, driven by a digital synthesizer and music-theory-based engine you can play live.
+Open-source multi-player web instrument for live performance, meditation, and sound exploration. Runs on any machine — Raspberry Pi, laptop, or cloud server. Multiple players connect from different machines for collaborative jam sessions and battle mode.
 
 ![Stack](https://img.shields.io/badge/stack-Python%20%2B%20Three.js%20%2B%20WebAudio-blue)
-![Platform](https://img.shields.io/badge/platform-Raspberry%20Pi%205-red)
+![Platform](https://img.shields.io/badge/platform-Any%20Machine-green)
+![License](https://img.shields.io/badge/license-MIT-yellow)
+![Players](https://img.shields.io/badge/multiplayer-battle%20mode-red)
 
-## What It Does
+## Features
 
-**Backend** (Python + WebSocket)
-- Simulates 8 token price feeds (ETH, BTC, SOL, LINK, UNI, AAVE, ARB, OP) at 10Hz
-- Runs Lorenz attractor, 64-sample rolling FFT, and 3-layer sine oscillator on token deltas
-- Compresses 4th dimension (w) into HSL color/opacity values
-- Broadcasts JSON via WebSocket at `ws://host:8765`
+### Multi-Player Battle Mode
+- **Room-based WebSocket** — all players on the same server share a room
+- **Real-time state sync** — see who's playing, what notes, which FX
+- **Player badges** — color-coded with live status indicators
+- **Cross-machine** — connect from any device on the network
 
-**3D Circle of Life Visuals** (Three.js + GLSL)
-- Toroidal ring path — the "circle of life" — with 8 procedural 3D animals orbiting:
-  - **Deer** — body, legs, neck, head, antlers
-  - **Fish** (x2) — ellipsoid body, tail fin, dorsal fin, eyes
-  - **Bird** (x2) — body, head, beak, flapping wings, tail
-  - **Turtle** — dome shell, belly, legs, head, tail
-  - **Elephant** — body, trunk (articulated), legs, ears, tusks, tail
-  - **Butterfly** — body with 4 translucent wings that flutter
-- All animals shift color based on the melody you play
-- Drum hits pulse animal scale and bloom intensity
-- Glowing center orb with GLSL shader (hue + pulse from melody)
-- 2 waveform ribbons circling the ring — undulate with keyboard notes
-- 6,000 stars + 4,000 dust particles along the ring
-- UnrealBloom post-processing synced to playing dynamics
-- Slow orbiting camera with vertical bob
+### 3D Circle of Life Visuals (Three.js + GLSL)
+- **Auto-generating 3D animals** — deer, fish, bird, turtle, elephant, butterfly, whale, fox
+- New animals spawn every 12 seconds, up to 10 on screen
+- Animals orbit a toroidal "circle of life" ring
+- **Color shifts with melody** — each note changes the hue of all animals
+- GLSL-shaded center orb pulses with amplitude
+- 2 waveform ribbons circle the ring, undulating with keyboard notes
+- Drum hits pulse scale + bloom intensity
+- UnrealBloom post-processing, orbiting camera, 5k stars, 3k dust
 
-**Digital Synthesizer** (Web Audio API)
+### Digital Synthesizer
 - **4 waveforms**: Sine, Sawtooth, Square, Triangle
-- **3-oscillator unison** with slight detune for richness
-- **Sub oscillator** (1 octave down, sine)
-- **Filter**: lowpass with cutoff + resonance controls
-- **ADSR envelope**: Attack + Release sliders
-- Playable via keyboard (Z-/ white keys, S D G H J L ; black keys)
+- **3-oscillator unison** with detune for richness + sub oscillator
+- **Filter**: lowpass with cutoff + resonance
+- **ADSR**: attack + release envelope
+- Playable via keyboard or on-screen keys
 
-**Music Engine**
-- **Jazz drums**: ride cymbal swing, kick/snare with ghost notes, hi-hat
-- **Thai drums**: klong, ching (open/closed), ranat xylophone (scale-aware)
-- **Ethiopian drums**: kebero (low/high), shaker
-- **Walking bass**: 3 modes — Walk (chromatic approaches), Root, 1-5 (root-fifth)
-- **Dub siren**: hold-to-play sawtooth siren with LFO wobble
-- **7 scales**: Major, Dorian, Mixolydian, Minor, Blues, Pentatonic, Tizita
-- **7 keys**: C, D, E, F, G, A, B — everything transposes together
-- **FX chain**: overdrive → phaser → convolution reverb → feedback delay
+### Reggae / Dub / Dancehall Drums
+- **One Drop** — classic reggae (kick + snare on beat 3)
+- **Steppers** — 4-on-the-floor roots reggae
+- **Dancehall** — syncopated kick, clap, fast hi-hats
+- **Dub** — heavy sparse kick, rimshot, space
+- **Percussion**: hi-hat (open/closed), rimshot, clap, tambourine, percussion hit
+- Per-instrument volume: kick, snare, hi-hat, percussion
+
+### Bass
+- **Reggae** — walking bass with chromatic approaches
+- **Dub** — sparse offbeat hits with sub
+- **Root** — simple root note
+- Sub bass level control
+
+### FX Chain with ON/OFF Buttons
+Each effect has a dedicated **ON/OFF toggle** button:
+- **DRV** (Overdrive) — waveshaper with variable curve
+- **PHA** (Phaser) — 4-stage allpass with LFO
+- **REV** (Reverb) — convolution reverb (2.5s decay)
+- **DLY** (Delay) — feedback delay (380ms, 35% feedback)
+- **DUB SIREN** — hold-to-play sawtooth + LFO wobble
+- FX section border **auto-color cycles** with the melody
+
+### Mixer with EQ
+Full mixer with per-channel controls:
+| Channel | Controls |
+|---------|----------|
+| SYN (Synth) | Volume + 3-band EQ (Lo/Mid/Hi) |
+| DRM (Drums) | Volume + 3-band EQ (Lo/Mid/Hi) |
+| BAS (Bass) | Volume + 3-band EQ (Lo/Mid/Hi) |
+| MIC (Microphone) | Volume + 2-band EQ (Lo/Hi) |
+
+### Recording & Microphone
+- **REC / SAVE** — record all audio output, download as `.webm`
+- **MIC** — connect microphone/audio interface with gain control
+- Mic routes through the mixer and full FX chain
+
+### 8-Bit Solarpunk UI
+- Pixel art inspired design with **Press Start 2P** font
+- Green / gold / earth tone color scheme
+- Retro pixel borders and glowing buttons
+- Auto-color cycling on FX section
+- Fullscreen button + panel toggle for immersive mode
 
 ## Keyboard Layout
-
-Play the synth using your computer keyboard:
 
 ```
  S D   G H J   L ;        ← black keys
 Z X C V B N M , . /       ← white keys (C D E F G A B C D E)
 ```
 
-Or click the on-screen keys. Touch-friendly on mobile/tablet.
+## Multi-Player Setup
 
-## Synth Controls
+### Host Machine (Server)
+```bash
+git clone https://github.com/xboxzero/token-oscillator.git
+cd token-oscillator
+pip3 install websockets numpy
+python3 backend/server.py
+```
 
-| Control | Function |
-|---------|----------|
-| SIN / SAW / SQR / TRI | Oscillator waveform |
-| CUT | Filter cutoff (lowpass) |
-| RES | Filter resonance |
-| ATK | Attack time (0–2s) |
-| REL | Release time (0–3s) |
+### Other Players (Clients)
+Open `http://SERVER_IP` in any browser. Everyone on the same network can join.
 
-## FX Chain
+Each player gets:
+- Unique color badge
+- Real-time note/FX state broadcast to all others
+- Independent instrument controls
 
-Signal path: **synth → overdrive → phaser → reverb + delay → master**
+### Battle Mode
+When 2+ players are connected:
+- Player badges appear in the top-left corner
+- Each player's active notes are shown
+- All players hear their own instruments independently
+- The 3D visuals react to the local player's melody
 
-| FX | Control | Description |
-|----|---------|-------------|
-| DRIVE | 0–100% | Waveshaper overdrive with variable curve |
-| PHASE | 0–100% | 4-stage allpass phaser with LFO |
-| VERB | 0–100% | Convolution reverb (2.2s decay) |
-| ECHO | 0–100% | Feedback delay (350ms, ~30% feedback) |
-
-## Recording & Download
-
-1. Click **REC** to start recording all audio output
-2. Click **REC** again to stop
-3. Click **SAVE** to download the recording as `.webm`
-
-Records everything: synth, drums, bass, drone, siren, microphone input, and FX.
-
-## Microphone / External Input
-
-1. Click **MIC** to connect your microphone or audio interface
-2. Adjust **GAIN** (0–200%) for input level
-3. Use **LO** and **HI** shelving EQ filters (-12dB to +12dB)
-4. Level meter shows real-time input signal
-5. Mic audio goes through the full FX chain
-6. Mic is included in recordings
-
-## Live Performance Controls
-
-### Transport Bar
-| Control | Function |
-|---------|----------|
-| BPM slider | 50–180 BPM |
-| TAP | Tap tempo (3+ taps) |
-| Scale | Major, Dorian, Mixolydian, Minor, Blues, Pentatonic, Tizita |
-| Key | C, D, E, F, G, A, B (transposes everything) |
-| REC / SAVE | Record and download audio |
-| VOL | Master volume |
-
-### Drums
-- **ON/OFF** toggle
-- **Jazz / Thai / Ethio** drum styles
-- **Kick / Snare / Hat** individual volumes
-- **Swing** amount + overall **Volume**
-
-### Bass
-- **ON/OFF** toggle
-- **Walk / Root / 1-5** patterns
-- **Volume** and **Tone** (filter cutoff)
-
-### UI Controls
-- **Fullscreen** button (top-right corner)
-- **Panel toggle** button (bottom-right) — hide controls for immersive visual mode
-
-## Setup
-
-### Quick Install (Raspberry Pi)
+## Quick Install (Raspberry Pi with Nginx)
 
 ```bash
 git clone https://github.com/xboxzero/token-oscillator.git
@@ -134,55 +117,45 @@ chmod +x install.sh
 ./install.sh
 ```
 
-Starts everything and enables auto-start on boot.
-
-### Manual Setup (any machine)
-
-```bash
-pip3 install websockets numpy
-python3 backend/server.py &
-cd frontend && python3 -m http.server 8080
-```
-
-Open `http://localhost:8080`. Click anywhere to start audio.
-
-### Password
-
-Nginx HTTP Basic Auth:
+### Password (Nginx)
 - **Username:** `oscillator`
 - **Password:** `2475112`
-
-Edit `/etc/nginx/.htpasswd` to change, or remove `auth_basic` from `nginx.conf`.
 
 ## Architecture
 
 ```
 token-oscillator/
 ├── backend/
-│   └── server.py              # WebSocket server + mock data + oscillator math
+│   └── server.py              # Multi-player WebSocket server + oscillator
 ├── frontend/
-│   ├── index.html             # Single-file app (Three.js + GLSL + Web Audio)
+│   ├── index.html             # Single-file app (Three.js + Web Audio)
 │   ├── three.min.js           # Three.js library
 │   └── pp/                    # Post-processing (UnrealBloom)
-├── nginx.conf                 # Nginx site config with auth
-├── token-oscillator.service   # systemd unit file
-├── install.sh                 # One-shot installer
+├── nginx.conf                 # Nginx config with auth
+├── token-oscillator.service   # systemd unit
+├── install.sh                 # Installer
 └── README.md
+```
+
+## Run Anywhere
+
+```bash
+# Any machine with Python 3 + Node/browser:
+pip3 install websockets numpy
+python3 backend/server.py &
+cd frontend && python3 -m http.server 8080
+# Open http://localhost:8080
 ```
 
 ## Service Management
 
 ```bash
-sudo systemctl start token-oscillator     # start
-sudo systemctl stop token-oscillator      # stop
-sudo systemctl restart token-oscillator   # restart
-sudo journalctl -u token-oscillator -f    # logs
+sudo systemctl start token-oscillator
+sudo systemctl stop token-oscillator
+sudo systemctl restart token-oscillator
+sudo journalctl -u token-oscillator -f
 ```
-
-## Performance
-
-On Raspberry Pi 5: backend ~0.5% CPU, frontend targets 30fps. Total < 40% CPU.
 
 ## License
 
-MIT
+MIT — open source, run it anywhere, modify freely.

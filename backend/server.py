@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Web Instrument for Meditation — WebSocket backend
-Simulates multi-token price streams and computes Lorenz/Fourier/sine oscillator data.
-Broadcasts at ~10Hz via WebSocket on port 8765.
+Clouding Synthesizer — WebSocket backend
+Multi-player room-based synthesizer server.
+Broadcasts oscillator data at 10Hz + relays player state for battle mode.
 """
 
 import asyncio
@@ -10,6 +10,7 @@ import json
 import math
 import random
 import time
+import uuid
 from collections import deque
 
 import numpy as np
@@ -77,7 +78,7 @@ class TokenSim:
         change = random.gauss(0, self.volatility)
         self.delta = change
         self.price *= (1.0 + change)
-        self.price = max(self.price * 0.01, self.price)  # floor at 1% of current
+        self.price = max(self.price * 0.01, self.price)
         self.volume = max(0.0, random.expovariate(2.0) + abs(change) * 50.0)
         self.delta_history.append(self.delta)
         return {
@@ -101,23 +102,19 @@ class OscillatorEngine:
         self.tick_count += 1
         self.t += TICK_INTERVAL
 
-        # Aggregate token deltas for perturbation
         deltas = [t.delta for t in self.tokens]
         avg_delta = sum(deltas) / len(deltas)
         total_volume = sum(t.volume for t in self.tokens)
         max_abs_delta = max(abs(d) for d in deltas) if deltas else 0.0
 
-        # Lorenz step with volatility perturbation
         volatility_signal = avg_delta * 1000.0
         lx, ly, lz = self.lorenz.step(volatility_signal)
 
-        # Sine bank: 3 layered waves
         s1 = math.sin(self.t * 0.3 * math.pi * 2 + avg_delta * 100)
         s2 = math.sin(self.t * 0.5 * math.pi * 2 + max_abs_delta * 200) * 0.6
         s3 = math.sin(self.t * 0.8 * math.pi * 2) * 0.3
         sine_mix = s1 + s2 + s3
 
-        # Fourier on combined delta history
         combined_deltas = []
         for t in self.tokens:
             combined_deltas.extend(t.delta_history)
@@ -131,35 +128,20 @@ class OscillatorEngine:
             fourier_bins = [0.0] * FOURIER_BINS
             dominant_freq = 0.0
 
-        # W dimension: mix of Fourier dominant freq + sine phase
         w_raw = dominant_freq * 0.6 + (sine_mix * 0.5 + 0.5) * 0.4
         w = max(0.0, min(1.0, w_raw))
-
-        # Amplitude from aggregate volatility
         amplitude = min(1.0, max_abs_delta * 500.0 + 0.2)
-
-        # Phase
         phase = (self.t * 0.5) % 1.0
-
-        # Tempo: breathing rate 0.3–0.8 Hz modulated by volume
         tempo = 0.3 + min(0.5, total_volume * 0.02)
-
-        # Block simulation
         block_number = 19000000 + int(self.t * 0.08)
-        block_time_variance = 0.05 + abs(math.sin(self.t * 0.1)) * 0.2
 
         return {
             "oscillator": {
-                "x": round(lx, 4),
-                "y": round(ly, 4),
-                "z": round(lz, 4),
-                "w": round(w, 4),
+                "x": round(lx, 4), "y": round(ly, 4),
+                "z": round(lz, 4), "w": round(w, 4),
             },
             "fourier": [round(f, 4) for f in fourier_bins],
-            "block": {
-                "number": block_number,
-                "time_variance": round(block_time_variance, 4),
-            },
+            "block": {"number": block_number},
             "phase": round(phase, 4),
             "amplitude": round(amplitude, 4),
             "tempo": round(tempo, 4),
@@ -167,55 +149,107 @@ class OscillatorEngine:
         }
 
 
-# ── WebSocket server ─────────────────────────────────────────────────────────
+# ── Multi-player room ────────────────────────────────────────────────────────
 
-CLIENTS = set()
-
-
-async def register(ws):
-    CLIENTS.add(ws)
-    print(f"Client connected ({len(CLIENTS)} total)")
+PLAYERS = {}  # ws -> {id, name, color, state}
 
 
-async def unregister(ws):
-    CLIENTS.discard(ws)
-    print(f"Client disconnected ({len(CLIENTS)} total)")
+def player_list():
+    """Get serializable list of all players."""
+    return [
+        {"id": p["id"], "name": p["name"], "color": p["color"],
+         "notes": p.get("notes", []), "fx": p.get("fx", {})}
+        for p in PLAYERS.values()
+    ]
+
+
+COLORS = ["#ff6b6b", "#ffd93d", "#6bcb77", "#4d96ff",
+          "#ff6fff", "#ff9f43", "#00d2d3", "#c792ea"]
+color_idx = 0
 
 
 async def handler(ws):
-    await register(ws)
+    global color_idx
+    pid = str(uuid.uuid4())[:8]
+    pcolor = COLORS[color_idx % len(COLORS)]
+    color_idx += 1
+    PLAYERS[ws] = {"id": pid, "name": f"Player-{pid[:4]}", "color": pcolor,
+                   "notes": [], "fx": {}}
+    count = len(PLAYERS)
+    print(f"Player {pid} connected ({count} total)")
+
+    # Send welcome with player ID
+    await ws.send(json.dumps({"type": "welcome", "id": pid, "color": pcolor,
+                               "players": player_list()}))
+    # Notify others
+    join_msg = json.dumps({"type": "player_join", "player": PLAYERS[ws],
+                            "count": count})
+    for c in list(PLAYERS.keys()):
+        if c != ws:
+            try:
+                await c.send(join_msg)
+            except Exception:
+                pass
+
     try:
-        async for _ in ws:
-            pass  # We only broadcast, ignore incoming messages
+        async for raw in ws:
+            try:
+                msg = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+            mt = msg.get("type", "")
+            if mt == "state":
+                # Player broadcasting their current state
+                p = PLAYERS.get(ws)
+                if p:
+                    p["notes"] = msg.get("notes", [])
+                    p["fx"] = msg.get("fx", {})
+                    if "name" in msg:
+                        p["name"] = msg["name"][:16]
+                    # Relay to others
+                    relay = json.dumps({"type": "player_state",
+                                         "id": p["id"], "notes": p["notes"],
+                                         "fx": p["fx"], "name": p["name"],
+                                         "color": p["color"]})
+                    for c in list(PLAYERS.keys()):
+                        if c != ws:
+                            try:
+                                await c.send(relay)
+                            except Exception:
+                                pass
     finally:
-        await unregister(ws)
+        p = PLAYERS.pop(ws, None)
+        count = len(PLAYERS)
+        print(f"Player {pid} disconnected ({count} total)")
+        leave_msg = json.dumps({"type": "player_leave", "id": pid,
+                                 "count": count})
+        for c in list(PLAYERS.keys()):
+            try:
+                await c.send(leave_msg)
+            except Exception:
+                pass
 
 
 async def broadcast_loop(tokens, engine):
     while True:
         t0 = time.monotonic()
-
-        # Tick all tokens
         token_data = [t.tick() for t in tokens]
-
-        # Compute oscillator
         osc_data = engine.compute()
 
-        # Build payload
         payload = json.dumps({
+            "type": "tick",
             "tokens": token_data,
             **osc_data,
+            "players": player_list(),
             "timestamp": time.time(),
         })
 
-        # Broadcast to all connected clients
-        if CLIENTS:
-            await asyncio.gather(
-                *[c.send(payload) for c in CLIENTS.copy()],
-                return_exceptions=True,
-            )
+        for c in list(PLAYERS.keys()):
+            try:
+                await c.send(payload)
+            except Exception:
+                pass
 
-        # Sleep to maintain tick rate
         elapsed = time.monotonic() - t0
         await asyncio.sleep(max(0, TICK_INTERVAL - elapsed))
 
@@ -224,7 +258,8 @@ async def main():
     tokens = [TokenSim(cfg) for cfg in TOKENS]
     engine = OscillatorEngine(tokens)
 
-    print("Token Oscillator backend starting on ws://0.0.0.0:8765")
+    print("Clouding Synthesizer backend starting on ws://0.0.0.0:8765")
+    print("Multi-player battle mode enabled — all connections share the room")
 
     async with websockets.serve(handler, "0.0.0.0", 8765):
         await broadcast_loop(tokens, engine)
